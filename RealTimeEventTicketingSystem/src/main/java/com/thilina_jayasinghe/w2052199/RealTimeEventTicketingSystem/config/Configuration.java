@@ -1,10 +1,10 @@
 package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.config;
 
 public class Configuration {
-    private int totalTickets;
-    private double ticketReleaseRate;
-    private double customerRetrievalRate;
-    private int maxTicketCapacity;
+    protected int totalTickets;
+    protected double ticketReleaseRate;
+    protected double customerRetrievalRate;
+    protected int maxTicketCapacity;
 
     Configuration(int totalTickets, double ticketReleaseRate, double customerRetrievalRate, int maxTicketCapacity) {
         setTotalTickets(totalTickets);
