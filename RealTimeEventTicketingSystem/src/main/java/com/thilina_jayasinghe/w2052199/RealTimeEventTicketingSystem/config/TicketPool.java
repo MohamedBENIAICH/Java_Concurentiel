@@ -5,13 +5,13 @@ import java.util.Collections;
 import java.util.List;
 
 public class TicketPool {
-    private List<Ticket> ticketList = Collections.synchronizedList(new ArrayList<Ticket>());
+    protected static List<Ticket> ticketList = Collections.synchronizedList(new ArrayList<Ticket>());
 
-    public void addTickets(Ticket ticket) {
+    protected void addTickets(Ticket ticket) {
         ticketList.addLast(ticket);
     }
 
-    public void removeTicket(Ticket ticket) {
+    protected void removeTicket(Ticket ticket) {
         ticketList.remove(ticket);
     }
 
