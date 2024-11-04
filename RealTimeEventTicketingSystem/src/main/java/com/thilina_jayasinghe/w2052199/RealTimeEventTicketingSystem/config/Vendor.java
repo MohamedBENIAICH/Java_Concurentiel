@@ -9,7 +9,7 @@ public class Vendor implements Runnable {
     private String address;
     private String email;
     private String telNo;
-    private List<Configuration> eventSeries;
+    public List<Configuration> eventSeries;
 
     public Vendor(String companyName, String address, String email, String telNo) {
         this.companyName = companyName;
@@ -55,11 +55,18 @@ public class Vendor implements Runnable {
 
     @Override
     public void run() {
+
         for (Configuration event : eventSeries) {
-            try {
-                releaseTickets(event);
-            } catch (InterruptedException e) {
-                System.out.println(e.getMessage());;
+            int i = 1;
+            while (i<=event.getTotalTickets()) {
+                try {
+                    releaseTickets(event, i);
+                    i++;
+                    Thread.sleep((long) (1000 / event.getTicketReleaseRate()));
+                } catch (InterruptedException e) {
+                    System.out.println(e.getMessage());
+                    ;
+                }
             }
         }
     }
@@ -126,34 +133,29 @@ public class Vendor implements Runnable {
                 System.out.println("What is the price of a ticket?");
                 price = input.nextDouble();
                 input.nextLine();
-                isConfiguring=false;
-            } catch (InputMismatchException | ParseException exception){
+                isConfiguring = false;
+            } catch (InputMismatchException | ParseException exception) {
                 System.out.println("Enter valid input.");
             }
 
         }
-
         Configuration configuration = new Configuration(totTickets, sellRate, buyRate, maxTickets, name, venue, eventDate, duration, eventType, price);
         eventSeries.add(configuration);
     }
 
-    public synchronized void releaseTickets(Configuration event) throws InterruptedException {
-        if(event.getTicketPool().getTicketList().size() == event.getMaxTicketCapacity()){
-            try {
-                System.out.println("Pool is at maximum capacity. Waiting for customers...");
-                wait();
-                System.out.println("Pool is at maximum capacity. Waiting for customers...");
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+        public synchronized void releaseTickets(Configuration event, int ticketNum) throws InterruptedException {
+            Object lock = event.getTicketPool().lock;
+            synchronized (lock) {
+                while (event.getTicketPool().getTicketList().size() == event.getMaxTicketCapacity()) {
+                    System.out.println("Pool is at maximum capacity. Waiting for customers...");
+                    lock.wait();
+                    System.out.println("Pool is at maximum capacity. Waiting for customers...");
+                }
+                Ticket ticket = new Ticket(ticketNum, event, event.getTicketPrice());
+                event.getTicketPool().addTickets(ticket);
+                System.out.println("Ticket " + ticket.ticketNo() + " is available now.");
+                lock.notify();
             }
         }
-        int ticketNum = 1;
-        Ticket ticket = new Ticket(ticketNum, event, event.getTicketPrice());
-        event.getTicketPool().addTickets(ticket);
-        ticketNum++;
-        Thread.sleep((long) (1000/event.getTicketReleaseRate()));
-        System.out.println("Ticket " + ticket.ticketNo() + " is available now.");
-        notify();
-    }
 
-}
+    }

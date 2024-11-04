@@ -1,7 +1,12 @@
 package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.config;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
@@ -88,7 +93,7 @@ public class Configuration {
 
     public void setCustomerRetrievalRate(double customerRetrievalRate) {
         if (
-                (customerRetrievalRate > 0.0) && (customerRetrievalRate < ticketReleaseRate)
+                customerRetrievalRate > 0.0
         ){
             this.customerRetrievalRate = customerRetrievalRate;
         }
@@ -156,17 +161,36 @@ public class Configuration {
 
 
     /**
-     * Write configuration settings in a json file
+     * Write configuration settings of events in a json file
      */
     private void serializeConfig() {
+        File file = new File("system_configuration_settings.json");
+        Gson gson = new Gson();
+        JsonArray jsonArray;
 
         try {
-            FileWriter fileWriter = new FileWriter("system_configuration_settings.json", true);
-            Gson gson = new Gson();
-            gson.toJson(this, fileWriter);
+            // Check if file exists and has data
+            if (file.exists() && file.length() != 0) {
+                // Load existing array from file
+                FileReader fileReader = new FileReader(file);
+                JsonElement jsonElement = JsonParser.parseReader(fileReader);
+                jsonArray = jsonElement.getAsJsonArray();
+                fileReader.close();
+            } else {
+                // Create new array if file is empty or does not exist
+                jsonArray = new JsonArray();
+            }
+
+            // Add the current object to the array
+            jsonArray.add(gson.toJsonTree(this));
+
+            // Write the updated array back to the file
+            FileWriter fileWriter = new FileWriter(file);
+            gson.toJson(jsonArray, fileWriter);
             fileWriter.close();
+
         } catch (IOException e) {
-            System.out.println("Error in saving to file: " + e.getMessage());;
+            System.out.println("Error in saving to file: " + e.getMessage());
         }
     }
 }

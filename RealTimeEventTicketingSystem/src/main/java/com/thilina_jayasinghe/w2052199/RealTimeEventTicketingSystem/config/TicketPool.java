@@ -5,7 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class TicketPool {
-    protected static List<Ticket> ticketList = Collections.synchronizedList(new ArrayList<Ticket>());
+    protected static List<Ticket> ticketList = Collections.synchronizedList(new ArrayList<>());
+    public Object lock = new Object();
 
     protected void addTickets(Ticket ticket) {
         ticketList.addLast(ticket);
@@ -16,6 +17,6 @@ public class TicketPool {
     }
 
     public List<Ticket> getTicketList() {
-        return new ArrayList<>(ticketList);
+        return ticketList;
     }
 }
