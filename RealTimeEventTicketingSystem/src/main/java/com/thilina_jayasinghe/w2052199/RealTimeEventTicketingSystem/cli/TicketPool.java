@@ -1,4 +1,4 @@
-package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.config;
+package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.cli;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,11 +8,11 @@ public class TicketPool {
     protected static List<Ticket> ticketList = Collections.synchronizedList(new ArrayList<>());
     public Object lock = new Object();
 
-    protected void addTickets(Ticket ticket) {
+    protected void add(Ticket ticket) {
         ticketList.addLast(ticket);
     }
 
-    protected void removeTicket(Ticket ticket) {
+    protected void remove(Ticket ticket) {
         ticketList.remove(ticket);
     }
 

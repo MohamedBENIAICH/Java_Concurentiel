@@ -1,4 +1,4 @@
-package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.Entity;
+package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.Model;
 
 import jakarta.persistence.*;
 
@@ -9,7 +9,10 @@ public class Vendor {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer vendorId;
-    private String companyName;
+
+    @OneToMany
+    @JoinColumn(name = "vendorId")
+    private String vendorName;
     private String address;
     private String email;
     private String telNo;
@@ -22,12 +25,13 @@ public class Vendor {
         this.vendorId = vendorId;
     }
 
-    public String getCompanyName() {
-        return companyName;
+
+    public String getVendorName() {
+        return vendorName;
     }
 
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
+    public void setVendorName(String vendorName) {
+        this.vendorName = vendorName;
     }
 
     public String getAddress() {
