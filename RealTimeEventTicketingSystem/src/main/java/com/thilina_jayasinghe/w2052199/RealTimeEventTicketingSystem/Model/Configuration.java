@@ -14,4 +14,43 @@ public class Configuration {
     private double customerRetrievalRate;
     private int maxTicketCapacity;
 
+    public int getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(int eventId) {
+        this.eventId = eventId;
+    }
+
+    public int getTotalTickets() {
+        return totalTickets;
+    }
+
+    public void setTotalTickets(int totalTickets) {
+        this.totalTickets = totalTickets;
+    }
+
+    public double getTicketReleaseRate() {
+        return ticketReleaseRate;
+    }
+
+    public void setTicketReleaseRate(double ticketReleaseRate) {
+        this.ticketReleaseRate = ticketReleaseRate;
+    }
+
+    public double getCustomerRetrievalRate() {
+        return customerRetrievalRate;
+    }
+
+    public void setCustomerRetrievalRate(double customerRetrievalRate) {
+        this.customerRetrievalRate = customerRetrievalRate;
+    }
+
+    public int getMaxTicketCapacity() {
+        return maxTicketCapacity;
+    }
+
+    public void setMaxTicketCapacity(int maxTicketCapacity) {
+        this.maxTicketCapacity = maxTicketCapacity;
+    }
 }

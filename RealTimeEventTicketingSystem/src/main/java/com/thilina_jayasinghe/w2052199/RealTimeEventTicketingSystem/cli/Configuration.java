@@ -95,7 +95,7 @@ public class Configuration {
         }
     }
 
-    public static void configureSystem(Connection connection) {
+    public static Configuration configureSystem(Connection connection) {
         int totTickets = 0;
         double sellRate = 0;
         double buyRate = 0;
@@ -132,6 +132,7 @@ public class Configuration {
         }
         Configuration configuration = new Configuration(totTickets, sellRate, buyRate, maxTickets, price);
         configuration.saveConfiguration(connection);
+        return configuration;
     }
 
 

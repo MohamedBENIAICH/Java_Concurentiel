@@ -26,7 +26,7 @@ public class EventTicketingSystem {
                                 |    Register a vendor -------------[1]               |
                                 |    Register a customer -----------[2]               |
                                 |    Start -------------------------[3]               |
-                                |    Stop --------------------------[4]               |
+                                |    Stop --------------------------[Ctrl + D]        |
                                 |    Exit Program ------------------[0]               |
                                 *******************************************************
                         """
@@ -42,10 +42,10 @@ public class EventTicketingSystem {
                             User customer = User.registerUser("Customer");
                             break;
                         case 3:
-                            // start all threads
+                            start();
                             break;
                         case 4:
-                            // shutdown hook to stop all threads
+
                             break;
                         case 0:
                             System.out.println("\nThank you for using this system :)");
@@ -62,6 +62,9 @@ public class EventTicketingSystem {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public static void start() {
 
     }
 

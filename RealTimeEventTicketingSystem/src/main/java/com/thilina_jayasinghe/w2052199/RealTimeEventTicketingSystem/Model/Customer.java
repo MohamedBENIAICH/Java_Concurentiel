@@ -2,6 +2,8 @@ package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.Model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "customer")
 public class Customer {
@@ -15,6 +17,7 @@ public class Customer {
     private String customerTel;
 
     @OneToMany(mappedBy = "customer")
+    private List<TicketSales> ticketSales;
 
     public void setCustomerId(int customerId) {
         this.customerId = customerId;

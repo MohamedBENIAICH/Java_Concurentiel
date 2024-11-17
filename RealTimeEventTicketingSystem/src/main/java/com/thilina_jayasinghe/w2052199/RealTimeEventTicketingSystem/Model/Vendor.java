@@ -2,6 +2,8 @@ package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.Model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "vendor")
 public class Vendor {
@@ -9,13 +11,13 @@ public class Vendor {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer vendorId;
-
-    @OneToMany
-    @JoinColumn(name = "vendorId")
     private String vendorName;
     private String address;
     private String email;
     private String telNo;
+
+    @OneToMany(mappedBy = "vendor")
+    private List<TicketSales> ticketSales;
 
     public Integer getVendorId() {
         return vendorId;
