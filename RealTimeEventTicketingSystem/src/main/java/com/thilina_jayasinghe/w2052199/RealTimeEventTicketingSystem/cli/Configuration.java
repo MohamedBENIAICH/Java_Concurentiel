@@ -10,8 +10,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -31,8 +29,9 @@ public class Configuration {
         setCustomerRetrievalRate(customerRetrievalRate);
         setMaxTicketCapacity(maxTicketCapacity);
         setTicketPrice(ticketPrice);
-        serializeConfig();
-        ticketPool = new TicketPool();
+//        serializeConfig();
+        ticketPool = new TicketPool(this);
+        TicketPool.setTicketsToBePurchased(totalTickets);
     }
 
     public int getTotalTickets() {
@@ -44,7 +43,7 @@ public class Configuration {
     }
 
     public void setTicketPrice(double ticketPrice) {
-        this.ticketPrice = ticketPrice;
+        Configuration.ticketPrice = ticketPrice;
     }
 
     public TicketPool getTicketPool() {
@@ -130,9 +129,7 @@ public class Configuration {
             }
 
         }
-        Configuration configuration = new Configuration(totTickets, sellRate, buyRate, maxTickets, price);
-        configuration.saveConfiguration(connection);
-        return configuration;
+        return new Configuration(totTickets, sellRate, buyRate, maxTickets, price);
     }
 
 
@@ -140,70 +137,35 @@ public class Configuration {
     /**
      * Write configuration settings of events in a json file
      */
-    private void serializeConfig() {
-        File file = new File("system_configuration_settings.json");
-        Gson gson = new Gson();
-        JsonArray jsonArray;
+//    private void serializeConfig() {
+//        File file = new File("system_configuration_settings.json");
+//        Gson gson = new Gson();
+//        JsonArray jsonArray;
+//
+//        try {
+//            // Check if file exists and has data
+//            if (file.exists() && file.length() != 0) {
+//                // Load existing array from file
+//                FileReader fileReader = new FileReader(file);
+//                JsonElement jsonElement = JsonParser.parseReader(fileReader);
+//                jsonArray = jsonElement.getAsJsonArray();
+//                fileReader.close();
+//            } else {
+//                // Create new array if file is empty or does not exist
+//                jsonArray = new JsonArray();
+//            }
+//
+//            // Add the current object to the array
+//            jsonArray.add(gson.toJsonTree(this));
+//
+//            // Write the updated array back to the file
+//            FileWriter fileWriter = new FileWriter(file);
+//            gson.toJson(jsonArray, fileWriter);
+//            fileWriter.close();
+//
+//        } catch (IOException e) {
+//            System.out.println("Error in saving to file: " + e.getMessage());
+//        }
+//    }
 
-        try {
-            // Check if file exists and has data
-            if (file.exists() && file.length() != 0) {
-                // Load existing array from file
-                FileReader fileReader = new FileReader(file);
-                JsonElement jsonElement = JsonParser.parseReader(fileReader);
-                jsonArray = jsonElement.getAsJsonArray();
-                fileReader.close();
-            } else {
-                // Create new array if file is empty or does not exist
-                jsonArray = new JsonArray();
-            }
-
-            // Add the current object to the array
-            jsonArray.add(gson.toJsonTree(this));
-
-            // Write the updated array back to the file
-            FileWriter fileWriter = new FileWriter(file);
-            gson.toJson(jsonArray, fileWriter);
-            fileWriter.close();
-
-        } catch (IOException e) {
-            System.out.println("Error in saving to file: " + e.getMessage());
-        }
-    }
-
-    public void saveConfiguration(Connection connection) {
-        String systemConfiguration = """
-              INSERT INTO event (ticketPrice, totalTickets, ticketReleaseRate, customerRetrievalRate, maxTicketCapacity) VALUES ()
-        """
-                ;
-        PreparedStatement preparedStatement = null;
-        try {
-            preparedStatement = connection.prepareStatement(systemConfiguration);
-
-            preparedStatement.setDouble(7, ticketPrice);
-            preparedStatement.setInt(8, totalTickets);
-            preparedStatement.setDouble(9, ticketReleaseRate);
-            preparedStatement.setDouble(10, customerRetrievalRate);
-            preparedStatement.setInt(11, maxTicketCapacity);
-
-            int numOfRows = preparedStatement.executeUpdate();
-
-            if (numOfRows > 0) {
-                System.out.println("Event saved successfully");
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        } finally {
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-                if (connection != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-        }
-    }
 }

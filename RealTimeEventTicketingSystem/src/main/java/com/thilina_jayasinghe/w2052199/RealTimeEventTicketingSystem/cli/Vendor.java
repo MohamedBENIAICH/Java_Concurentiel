@@ -1,38 +1,27 @@
 package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.cli;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.*;
+import java.util.logging.Logger;
 
 public class Vendor extends User implements Runnable {
+    private Configuration configuration;
+    private static final Logger logger = Logger.getLogger(Vendor.class.getName());
 
-    public Vendor(String companyName, String address, String email, String telNo) {
+    public Vendor(String companyName, String address, String email, String telNo, Configuration configuration) {
         super(companyName, address, email, telNo);
+        this.configuration = configuration;
     }
 
     @Override
     public void run() {
-
-
-    }
-
-    public synchronized void addTickets(Configuration sysConfig, int ticketNum) throws InterruptedException {
-        Object lock = sysConfig.getTicketPool().lock;
-        synchronized (lock) {
-            while (sysConfig.getTicketPool().getTicketList().size() == sysConfig.getMaxTicketCapacity()) {
-                System.out.println("Pool is at maximum capacity. Waiting for customers...");
-                lock.wait();
-                System.out.println("Pool is at maximum capacity. Waiting for customers...");
+        try {
+            while (TicketPool.getTicketCount().get()<configuration.getTotalTickets() && !Thread.currentThread().isInterrupted()) {
+                configuration.getTicketPool().addTickets(getName());
+                Thread.sleep((long) (1000/configuration.getTicketReleaseRate()));
             }
-            Ticket ticket = new Ticket(ticketNum, this, sysConfig.getTicketPrice());
-            sysConfig.getTicketPool().add(ticket);
-            System.out.println("Ticket " + ticket.getTicketNo() + " is available now.");
-            lock.notify();
+        } catch (InterruptedException e) {
+            logger.info(Thread.currentThread().getName() + " interrupted.");
+            Thread.currentThread().interrupt(); // Preserve interrupt status
         }
-    }
-
-    public void saveVendor(Connection connection) {
-
     }
 
 }

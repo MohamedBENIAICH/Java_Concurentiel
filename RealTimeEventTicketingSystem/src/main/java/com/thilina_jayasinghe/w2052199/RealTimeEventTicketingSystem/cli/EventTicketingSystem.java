@@ -3,11 +3,14 @@ package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.cli;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 public class EventTicketingSystem {
     public static void main(String[] args) {
+        List<Thread> threads = new ArrayList<>();
         try {
             Connection connection = DriverManager.getConnection("", "", "");
             Scanner input = new Scanner(System.in);
@@ -16,7 +19,7 @@ public class EventTicketingSystem {
 
             System.out.println("\n                  Welcome to the Event Booking System!\n");
 
-            Configuration.configureSystem(connection);
+            Configuration configuration = Configuration.configureSystem(connection);
 
             while(is_Running) {
                 System.out.println(
@@ -26,7 +29,7 @@ public class EventTicketingSystem {
                                 |    Register a vendor -------------[1]               |
                                 |    Register a customer -----------[2]               |
                                 |    Start -------------------------[3]               |
-                                |    Stop --------------------------[Ctrl + D]        |
+                                |    Stop --------------------------[Ctrl + C]        |
                                 |    Exit Program ------------------[0]               |
                                 *******************************************************
                         """
@@ -36,16 +39,19 @@ public class EventTicketingSystem {
                     input.nextLine();
                     switch (option) {
                         case 1:
-                            User vendor = User.registerUser("Vendor");
+                            Vendor vendor = (Vendor) User.registerUser("Vendor", configuration);
+                            threads.add(new Thread(vendor, vendor.getName()));
                             break;
                         case 2:
-                            User customer = User.registerUser("Customer");
+                            Customer customer = (Customer) User.registerUser("Customer", configuration);
+                            Thread customerThread = new Thread(customer, customer.getName());
+                            if (customer.getIsVIP()) {
+                                customerThread.setPriority(Thread.MAX_PRIORITY);
+                            }
+                            threads.add(customerThread);
                             break;
                         case 3:
-                            start();
-                            break;
-                        case 4:
-
+                            start(threads);
                             break;
                         case 0:
                             System.out.println("\nThank you for using this system :)");
@@ -64,8 +70,25 @@ public class EventTicketingSystem {
         }
     }
 
-    public static void start() {
+    public static void start(List<Thread> threads) {
+        for (Thread thread : threads) {
+            thread.start();
+        }
 
+        for (Thread thread : threads) {
+            try {
+                thread.join();
+                System.out.println(Thread.currentThread().getName() + "thread has joined");
+            } catch (InterruptedException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    public static void stop(List<Thread> threads) {
+        for (Thread thread : threads) {
+            thread.interrupt();
+        }
     }
 
 }

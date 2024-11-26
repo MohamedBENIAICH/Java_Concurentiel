@@ -1,13 +1,16 @@
 package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.cli;
 
-import java.util.Scanner;
+
+import java.time.LocalDateTime;
 
 public class Customer extends User implements Runnable {
     private boolean isVIP = false;
+    private Configuration configuration;
 
-    public Customer(String customerName, String clientAddress, String clientEmail, String clientTel, boolean isVIP) {
+    public Customer(String customerName, String clientAddress, String clientEmail, String clientTel, boolean isVIP, Configuration configuration) {
         super(customerName, clientAddress, clientEmail, clientTel);
         this.isVIP = isVIP;
+        this.configuration = configuration;
     }
 
     public boolean getIsVIP() {
@@ -15,25 +18,21 @@ public class Customer extends User implements Runnable {
     }
 
 
-    private synchronized void removeTickets(Configuration configuration) throws InterruptedException {
-        Object lock = configuration.getTicketPool().lock;
-        synchronized (lock){
-            lock.notify();
-            while (configuration.getTicketPool().getTicketList().isEmpty()) {
-                lock.wait();
+
+    @Override
+    public void run () {
+        try {
+            while (TicketPool.getTicketsToBePurchased().get() != 0) {
+                Ticket ticket = configuration.getTicketPool().removeTicket(this, LocalDateTime.now().toString());
+                if (ticket == null) {
+                    break;
+                }
+                Thread.sleep((long) (1000/configuration.getCustomerRetrievalRate()));
             }
-            Ticket ticket = configuration.getTicketPool().getTicketList().getFirst();
-            if (isVIP) {
-                ticket.setTicketPrice(1.2* ticket.getTicketPrice());
-            }
-            System.out.println(ticket.getTicketNo() + " got purchased by customer" + getName() + " for " + ticket.getTicketPrice());
-            configuration.getTicketPool().remove(ticket);
+//            System.out.println("It has reached the interrupt stage");
+        } catch (InterruptedException e) {
+            System.out.println(Thread.currentThread().getName() + " interrupted.");
+            Thread.currentThread().interrupt(); // Preserve interrupt status
         }
     }
-
-
-            @Override
-            public void run () {
-
-            }
-        }
+}
