@@ -2,34 +2,52 @@ package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.cli;
 
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Customer extends User implements Runnable {
-    private boolean isVIP = false;
-    private Configuration configuration;
+    private boolean isVIP;
+    private TicketPool ticketPool;
+    private int quantity;
+    private static double customerRetrievalRate = Objects.requireNonNull(GsonSerializer.deserializeConfig()).getCustomerRetrievalRate();
 
-    public Customer(String customerName, String clientAddress, String clientEmail, String clientTel, boolean isVIP, Configuration configuration) {
+    public Customer(String customerName, String clientAddress, String clientEmail, String clientTel, boolean isVIP, int quantity, TicketPool ticketPool) {
         super(customerName, clientAddress, clientEmail, clientTel);
         this.isVIP = isVIP;
-        this.configuration = configuration;
+        this.ticketPool = ticketPool;
+        this.quantity = quantity;
     }
 
     public boolean getIsVIP() {
         return isVIP;
     }
 
+    public int getQuantity() {
+        return quantity;
+    }
 
+    public double getCustomerRetrievalRate() {
+        return customerRetrievalRate;
+    }
+
+    public boolean isVIP() {
+        return isVIP;
+    }
+
+    public void setVIP(boolean VIP) {
+        isVIP = VIP;
+    }
 
     @Override
     public void run () {
         try {
-            while (TicketPool.getTicketsToBePurchased().get() != 0) {
-                Ticket ticket = configuration.getTicketPool().removeTicket(this, LocalDateTime.now().toString());
+            while (ticketPool.getTicketsToBePurchased().get() != 0 && (quantity>0)) {
+                Ticket ticket = ticketPool.removeTicket(this, LocalDateTime.now().toString());
+                quantity--;
                 if (ticket == null) {
                     break;
                 }
-                Thread.sleep((long) (1000/configuration.getCustomerRetrievalRate()));
+                Thread.sleep((long) (1000/customerRetrievalRate));
             }
-//            System.out.println("It has reached the interrupt stage");
         } catch (InterruptedException e) {
             System.out.println(Thread.currentThread().getName() + " interrupted.");
             Thread.currentThread().interrupt(); // Preserve interrupt status

@@ -1,15 +1,21 @@
 package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.cli;
 
+import java.math.BigDecimal;
+
 public class Ticket {
     private final int ticketNo;
     private final String vendorName;
-    private double ticketPrice;
+    private String eventName;
+    private String location;
+    private BigDecimal ticketPrice;
     private String timestamp;
     private String customerName;
 
-    public Ticket(int ticketNo, String vendorName, double ticketPrice) {
+    public Ticket(int ticketNo, String vendorName, String eventName, String location, BigDecimal ticketPrice) {
         this.vendorName = vendorName;
         this.ticketNo = ticketNo;
+        this.eventName = eventName;
+        this.location = location;
         this.ticketPrice = ticketPrice;
     }
 
@@ -21,7 +27,7 @@ public class Ticket {
         return vendorName;
     }
 
-    public double getTicketPrice() {
+    public BigDecimal getTicketPrice() {
         return ticketPrice;
     }
 
@@ -33,7 +39,7 @@ public class Ticket {
         return customerName;
     }
 
-    public void setTicketPrice(double ticketPrice) {
+    public void setTicketPrice(BigDecimal ticketPrice) {
         this.ticketPrice = ticketPrice;
     }
 
@@ -43,6 +49,22 @@ public class Ticket {
 
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getEventName() {
+        return eventName;
+    }
+
+    public void setEventName(String eventName) {
+        this.eventName = eventName;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     @Override

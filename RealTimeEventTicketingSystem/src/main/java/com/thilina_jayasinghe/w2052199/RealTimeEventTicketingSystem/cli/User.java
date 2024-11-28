@@ -1,5 +1,6 @@
 package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.cli;
 
+import java.math.BigDecimal;
 import java.util.Scanner;
 
 public class User {
@@ -15,19 +16,26 @@ public class User {
         this.telNo = telNo;
     }
 
-    protected static User registerUser(String userType, Configuration configuration) {
+    protected static User registerUser(String userType, TicketPool ticketPool) {
         while(true) {
             Scanner input = new Scanner(System.in);
             System.out.println("Enter name.");
             String name = input.nextLine();
             System.out.println("Enter address.");
             String address = input.nextLine();
-            System.out.println("Enter email.");
+            System.out.println("Enter email.");   // need to verify
             String email = input.nextLine();
-            System.out.println("Enter mobile number.");
+            System.out.println("Enter mobile number.");    // need to verify
             String tel = input.nextLine();
             if (userType.equals("Vendor")) {
-                return new Vendor(name, address, email, tel, configuration);
+                System.out.println("Enter the name of the event.");
+                String event = input.nextLine();
+                System.out.println("Enter the location of the event.");
+                String location = input.nextLine();
+                System.out.println("Enter the price of a ticket.");
+                BigDecimal price = input.nextBigDecimal();
+                input.nextLine();
+                return new Vendor(name, address, email, tel, event, location, price, ticketPool);
             } else if (userType.equals("Customer")) {
                 boolean isVIP = false;
                 System.out.println("Would you be interested in a premium account to enjoy early access to ticket purchases for only 20% more?(Y/N)");
@@ -40,7 +48,10 @@ public class User {
                 } else {
                     System.out.println("Invalid response. Premium features are unavailable at this time:)");
                 }
-                return new Customer(name, address, email, tel, isVIP, configuration);
+                System.out.println("Enter the number of tickets you wish to purchase.");
+                int noOfTickets = input.nextInt();
+                input.nextLine();
+                return new Customer(name, address, email, tel, isVIP, noOfTickets, ticketPool);
             }
         }
     }

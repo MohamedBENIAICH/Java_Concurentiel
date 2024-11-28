@@ -1,37 +1,44 @@
 package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.cli;
 
+import com.google.gson.Gson;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
-import static java.lang.Thread.currentThread;
-
 public class TicketPool {
-    protected static List<Ticket> ticketList = Collections.synchronizedList(new ArrayList<>());
-    private final Configuration configuration;
-    private static AtomicInteger ticketCount = new AtomicInteger(0);
-    private static AtomicInteger ticketsToBePurchased = new AtomicInteger(0);
+    protected List<Ticket> ticketList;
+    private int maxTicketCapacity;
+    private AtomicInteger ticketCount;
+    private AtomicInteger ticketsToBePurchased;
+    private static final Gson gson = new Gson();
     private static final Logger logger = Logger.getLogger(TicketPool.class.getName());
 
-    public TicketPool(Configuration configuration) {
-        this.configuration = configuration;
+    public TicketPool() {
+        ticketList = Collections.synchronizedList(new ArrayList<>());
+        maxTicketCapacity = Objects.requireNonNull(GsonSerializer.deserializeConfig()).getMaxTicketCapacity();
+        ticketCount = new AtomicInteger(0);
+        ticketsToBePurchased = new AtomicInteger(0);
     }
 
-    protected synchronized void addTickets(String vendorName) {
+
+    protected synchronized void addTickets(String vendorName, int totalTickets,String eventName, String location, BigDecimal ticketPrice) {
         try {
-            while ((ticketList.size() == configuration.getMaxTicketCapacity()) && (ticketCount.get() != configuration.getTotalTickets())) {       // if the list is full, it will wait indefinitely until a free spot is available
+            while ((ticketList.size() == maxTicketCapacity) && (ticketCount.get() != totalTickets)) {       // if the list is full, it will wait indefinitely until a free spot is available
                 logger.warning("Queue is full. Waiting for consumer...");
                 wait();
-                logger.info("Vendor got notified from consumer");
+                logger.warning("Vendor got notified from consumer");
             }
-            if (ticketCount.get() == configuration.getTotalTickets()) {
+            if (ticketCount.get() == totalTickets) {
                 Thread.currentThread().interrupt();
                 return;
             }
             setTicketCount(ticketCount.incrementAndGet());
-            Ticket ticket = new Ticket(ticketCount.get(), vendorName, configuration.getTicketPrice());
+            Ticket ticket = new Ticket(ticketCount.get(), vendorName, eventName, location, ticketPrice);
             ticketList.addLast(ticket);
             logger.info(vendorName + " released ticket number " + ticketCount);
             notifyAll();
@@ -53,7 +60,7 @@ public class TicketPool {
             Ticket ticket = ticketList.getFirst();
             ticket.setCustomerName(customer.getName());
             if(customer.getIsVIP()) {
-                ticket.setTicketPrice(ticket.getTicketPrice()*1.2);
+                ticket.setTicketPrice(ticket.getTicketPrice().multiply(new BigDecimal("1.2")));
             }
             ticket.setTimestamp(timestamp);
             ticketList.removeFirst();
@@ -68,20 +75,20 @@ public class TicketPool {
         }
     }
 
-    public static AtomicInteger getTicketCount() {
+    public AtomicInteger getTicketCount() {
         return ticketCount;
     }
 
-    public static void setTicketCount(int ticketCount) {
-        TicketPool.ticketCount.set(ticketCount);
+    public void setTicketCount(int ticketCount) {
+        this.ticketCount.set(ticketCount);
     }
 
-    public static AtomicInteger getTicketsToBePurchased() {
+    public AtomicInteger getTicketsToBePurchased() {
         return ticketsToBePurchased;
     }
 
-    public static void setTicketsToBePurchased(int ticketsToBePurchased) {
-        TicketPool.ticketsToBePurchased.set(ticketsToBePurchased);
+    public void setTicketsToBePurchased(int ticketsToBePurchased) {
+        this.ticketsToBePurchased.set(ticketsToBePurchased);
     }
 
 }
