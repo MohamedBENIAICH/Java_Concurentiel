@@ -48,7 +48,7 @@ public class Configuration {
 
     public void setCustomerRetrievalRate(double customerRetrievalRate) {
         if (
-                (customerRetrievalRate > 0.0) && (customerRetrievalRate < ticketReleaseRate)
+                (customerRetrievalRate > 0.0) && (customerRetrievalRate <= ticketReleaseRate)
         ){
             this.customerRetrievalRate = customerRetrievalRate;
         }
@@ -60,7 +60,7 @@ public class Configuration {
 
     public void setMaxTicketCapacity(int maxTicketCapacity) {
         if (
-                (maxTicketCapacity < totalTickets) && (maxTicketCapacity > 0)
+                (maxTicketCapacity < totalTickets) && (maxTicketCapacity > ticketReleaseRate)
         ){
             this.maxTicketCapacity = maxTicketCapacity;
         }
@@ -70,7 +70,7 @@ public class Configuration {
         int totTickets = 0;
         double sellRate = 0;
         double buyRate = 0;
-        int maxTickets = 0;
+        int maxCapacity = 0;
         boolean isConfiguring = true;
         while (isConfiguring) {
             try {
@@ -78,24 +78,32 @@ public class Configuration {
                 totTickets = input.nextInt();
                 input.nextLine();
 
+                if (totTickets <= 0) continue;
+
                 System.out.println("Enter ticket release rate.");
                 sellRate = input.nextDouble();
                 input.nextLine();
+
+                if ((sellRate <= 0) || (sellRate > totTickets)) continue;
 
                 System.out.println("Enter allowable ticket purchase rate of customers.");
                 buyRate = input.nextDouble();
                 input.nextLine();
 
+                if ((buyRate <= 0) || (buyRate > sellRate)) continue;
+
                 System.out.println("Enter maximum number of tickets available at any given instance.");
-                maxTickets = input.nextInt();
+                maxCapacity = input.nextInt();
                 input.nextLine();
+
+                if ((maxCapacity > totTickets)  || (maxCapacity < sellRate)) continue;
+
 
                 isConfiguring = false;
             } catch (InputMismatchException exception) {
                 System.out.println("Enter valid input.");
             }
-            GsonSerializer.serializeConfig(new Configuration(totTickets, buyRate, sellRate, maxTickets));
-            TicketPool.setTicketsToBePurchased(totTickets);
+            GsonSerializer.serializeConfig(new Configuration(totTickets, buyRate, sellRate, maxCapacity));
         }
     }
 

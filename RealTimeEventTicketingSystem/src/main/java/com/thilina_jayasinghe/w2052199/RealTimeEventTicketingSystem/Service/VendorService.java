@@ -36,8 +36,4 @@ public class VendorService implements Runnable {
     public void run() {
 
     }
-
-    public synchronized void releaseTickets() {
-
-    }
 }

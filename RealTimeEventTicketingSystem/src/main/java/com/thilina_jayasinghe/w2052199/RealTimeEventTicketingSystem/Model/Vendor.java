@@ -16,9 +16,6 @@ public class Vendor {
     private String email;
     private String telNo;
 
-    @OneToMany(mappedBy = "vendor")
-    private List<TicketSales> ticketSales;
-
     public Integer getVendorId() {
         return vendorId;
     }
@@ -26,7 +23,6 @@ public class Vendor {
     public void setVendorId(Integer vendorId) {
         this.vendorId = vendorId;
     }
-
 
     public String getVendorName() {
         return vendorName;

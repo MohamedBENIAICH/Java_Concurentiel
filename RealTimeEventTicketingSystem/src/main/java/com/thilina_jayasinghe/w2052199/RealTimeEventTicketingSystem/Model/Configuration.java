@@ -7,20 +7,10 @@ import jakarta.persistence.*;
 @Table(name = "config")
 public class Configuration {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int eventId;
     private int totalTickets;
     private double ticketReleaseRate;
     private double customerRetrievalRate;
     private int maxTicketCapacity;
-
-    public int getEventId() {
-        return eventId;
-    }
-
-    public void setEventId(int eventId) {
-        this.eventId = eventId;
-    }
 
     public int getTotalTickets() {
         return totalTickets;

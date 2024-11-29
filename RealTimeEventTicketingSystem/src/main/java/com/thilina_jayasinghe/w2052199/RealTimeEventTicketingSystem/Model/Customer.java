@@ -16,9 +16,6 @@ public class Customer {
     private String customerEmail;
     private String customerTel;
 
-    @OneToMany(mappedBy = "customer")
-    private List<TicketSales> ticketSales;
-
     public void setCustomerId(int customerId) {
         this.customerId = customerId;
     }

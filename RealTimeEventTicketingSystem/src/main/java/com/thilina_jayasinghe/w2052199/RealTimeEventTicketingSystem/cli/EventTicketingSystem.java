@@ -3,6 +3,7 @@ package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.cli;
 import java.util.*;
 
 public class EventTicketingSystem {
+
     public static void main(String[] args) {
         List<Thread> threads = new ArrayList<>();
         Scanner input = new Scanner(System.in);
@@ -24,8 +25,7 @@ public class EventTicketingSystem {
                                 |    Register a vendor -------------[1]               |
                                 |    Register a customer -----------[2]               |
                                 |    Start -------------------------[3]               |
-                                |    Stop --------------------------[4]               |
-                                |    Reconfigure system ------------[5]               |
+                                |    Reconfigure system ------------[4]               |
                                 |    Exit Program ------------------[0]               |
                                 *******************************************************
                         """
@@ -50,7 +50,8 @@ public class EventTicketingSystem {
                             start(threads);
                             break;
                         case 4:
-                            stop(threads);
+                            Configuration.configureSystem();
+                            ticketPool = new TicketPool();
                             break;
                         case 0:
                             System.out.println("\nThank you for using this system :)");
@@ -71,22 +72,17 @@ public class EventTicketingSystem {
 
     public static void start(List<Thread> threads) {
         for (Thread thread : threads) {
+            System.out.println(thread.getName());
             thread.start();
         }
 
-        for (Thread thread : threads) {
-            try {
+        try {
+            for (Thread thread : threads) {
                 thread.join();
-                System.out.println(Thread.currentThread().getName() + "thread has joined");
-            } catch (InterruptedException e) {
-                System.out.println(e.getMessage());
             }
-        }
-    }
-
-    public static void stop(List<Thread> threads) {
-        for (Thread thread : threads) {
-            thread.interrupt();
+            threads.clear();
+        } catch (InterruptedException e) {
+            System.out.println(e.getMessage());
         }
     }
 

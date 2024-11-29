@@ -11,17 +11,14 @@ public class TicketSales {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int transactionId;
 
-    @ManyToOne
-    @JoinColumn(name = "vendorId")
-    private Vendor vendor;
+    private String vendor;
 
     private int ticketNo;
 
-    @ManyToOne
-    @JoinColumn(name = "customerId")
-    private Customer customer;
+    private String customer;
 
     private double ticketPrice;
+
     private Timestamp timestamp;
 
     public int getTransactionId() {
@@ -32,13 +29,6 @@ public class TicketSales {
         this.transactionId = transactionId;
     }
 
-    public Vendor getVendor() {
-        return vendor;
-    }
-
-    public void setVendor(Vendor vendor) {
-        this.vendor = vendor;
-    }
 
     public int getTicketNo() {
         return ticketNo;
@@ -46,14 +36,6 @@ public class TicketSales {
 
     public void setTicketNo(int ticketNo) {
         this.ticketNo = ticketNo;
-    }
-
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
     }
 
     public double getTicketPrice() {

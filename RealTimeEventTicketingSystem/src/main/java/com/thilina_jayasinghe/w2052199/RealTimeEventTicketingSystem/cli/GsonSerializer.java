@@ -1,27 +1,20 @@
 package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.cli;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.logging.Filter;
-import java.util.logging.Formatter;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
-public class GsonSerializer extends Formatter implements Filter {
+public class GsonSerializer {
 
     static File file = new File("system_config_settings.json");
     static Gson gson = new Gson();
-    private Level level = Level.INFO;
 
     /**
-     * Write initialization settings of system in a json file
+     * Write initialization settings of system to a json file
+     * @param configuration object containing all the parameters for total tickets, ticket sell rate and purchase rate
+     *                      and size of the ticket buffer
      */
     protected static void serializeConfig(Configuration configuration) {
 
@@ -63,15 +56,39 @@ public class GsonSerializer extends Formatter implements Filter {
         return null; // Return null if deserialization fails
     }
 
-    @Override
-    public String format(LogRecord record) {
-        Ticket ticket = (Ticket) record.getParameters()[0];
-        return gson.toJson(ticket) + System.lineSeparator();
+    /**
+     * Append ticket to a json file containing all ticket objects
+     * @param ticket object containing vendor, customer, event details and time of ticket purchase
+     */
+    protected static void appendToJsonFile(Ticket ticket) {
+        File file = new File("tickets.json");
+        List<Ticket> ticketPurchases = new ArrayList<>();
+
+        // Read existing data if the file already exists
+        if (file.exists() && file.length() > 0) {
+            try {
+                FileReader reader = new FileReader(file);
+                JsonArray existingArray = JsonParser.parseReader(reader).getAsJsonArray();
+                for (JsonElement ticketObject : existingArray) {
+                    ticketPurchases.add(gson.fromJson(ticketObject, Ticket.class));
+                }
+                reader.close();
+            } catch (JsonIOException | JsonSyntaxException | IOException e) {
+                System.out.println(e.getMessage());;
+            }
+        }
+
+        // Add the new object to the list
+        ticketPurchases.add(ticket);
+
+        // Write the updated list back to the JSON file
+        try  {
+            FileWriter fileWriter = new FileWriter(file);
+            gson.toJson(ticketPurchases, fileWriter);
+            fileWriter.close();
+        } catch (IOException | JsonIOException e) {
+            System.out.println(e.getMessage());;
+        }
     }
 
-
-    @Override
-    public boolean isLoggable(LogRecord record) {
-        return record.getLevel().equals(level);
-    }
 }

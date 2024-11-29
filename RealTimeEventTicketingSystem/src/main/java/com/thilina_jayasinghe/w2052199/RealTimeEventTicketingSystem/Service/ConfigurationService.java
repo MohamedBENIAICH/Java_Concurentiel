@@ -20,11 +20,6 @@ public class ConfigurationService {
         return configurationRepository.findById(eventId).orElseThrow();
     }
 
-    public Configuration updateConfiguration(Configuration configuration) {
-        configurationRepository.findById(configuration.getEventId()).orElseThrow();
-        return configurationRepository.save(configuration);
-    }
-
     public void deleteConfiguration(Integer eventId) {
         configurationRepository.deleteById(eventId);
     }
