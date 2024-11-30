@@ -1,4 +1,4 @@
-package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.Model;
+package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.model;
 
 import jakarta.persistence.*;
 
@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 @Table(name = "config")
 public class Configuration {
     @Id
+    private final int configId = 1;
     private int totalTickets;
     private double ticketReleaseRate;
     private double customerRetrievalRate;

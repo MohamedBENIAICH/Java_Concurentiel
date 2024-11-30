@@ -1,8 +1,6 @@
-package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.Model;
+package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.model;
 
 import jakarta.persistence.*;
-
-import java.util.List;
 
 @Entity
 @Table(name = "vendor")

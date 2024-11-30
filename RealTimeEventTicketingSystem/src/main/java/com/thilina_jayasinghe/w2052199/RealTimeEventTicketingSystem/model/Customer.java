@@ -1,8 +1,6 @@
-package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.Model;
+package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.model;
 
 import jakarta.persistence.*;
-
-import java.util.List;
 
 @Entity
 @Table(name = "customer")
@@ -16,45 +14,43 @@ public class Customer {
     private String customerEmail;
     private String customerTel;
 
-    public void setCustomerId(int customerId) {
-        this.customerId = customerId;
-    }
-
-
     public int getCustomerId() {
         return customerId;
     }
 
-    public String getClientName() {
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
+    }
+
+    public String getCustomerName() {
         return customerName;
     }
 
-    public void setClientName(String customerName) {
+    public void setCustomerName(String customerName) {
         this.customerName = customerName;
     }
 
-    public String getClientAddress() {
+    public String getCustomerAddress() {
         return customerAddress;
     }
 
-    public void setClientAddress(String customerAddress) {
+    public void setCustomerAddress(String customerAddress) {
         this.customerAddress = customerAddress;
     }
 
-    public String getClientEmail() {
+    public String getCustomerEmail() {
         return customerEmail;
     }
 
-    public void setClientEmail(String customerEmail) {
+    public void setCustomerEmail(String customerEmail) {
         this.customerEmail = customerEmail;
     }
 
-    public String getClientTel() {
+    public String getCustomerTel() {
         return customerTel;
     }
 
-    public void setClientTel(String customerTel) {
+    public void setCustomerTel(String customerTel) {
         this.customerTel = customerTel;
     }
-
 }

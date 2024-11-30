@@ -1,7 +1,7 @@
-package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.Service;
+package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.service;
 
-import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.Model.Vendor;
-import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.Repository.VendorRepository;
+import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.model.Vendor;
+import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.repository.VendorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +34,5 @@ public class VendorService implements Runnable {
 
     @Override
     public void run() {
-
     }
 }

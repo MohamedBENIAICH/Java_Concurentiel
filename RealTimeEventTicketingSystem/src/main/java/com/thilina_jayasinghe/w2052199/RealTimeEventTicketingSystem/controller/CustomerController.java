@@ -1,8 +1,7 @@
-package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.Controller;
+package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.controller;
 
-import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.Model.Customer;
-import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.Model.Vendor;
-import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.Service.CustomerService;
+import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.model.Customer;
+import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
