@@ -29,6 +29,21 @@ public class Ticket {
         this.transactionId = transactionId;
     }
 
+    public String getVendor() {
+        return vendor;
+    }
+
+    public void setVendor(String vendor) {
+        this.vendor = vendor;
+    }
+
+    public String getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(String customer) {
+        this.customer = customer;
+    }
 
     public int getTicketNo() {
         return ticketNo;
