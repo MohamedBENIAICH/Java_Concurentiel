@@ -2,6 +2,7 @@ package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.model;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Entity
@@ -14,6 +15,10 @@ public class Ticket {
     private String vendor;
 
     private int ticketNo;
+
+    private String eventName;
+
+    private String location;
 
     private String customer;
 
@@ -57,7 +62,7 @@ public class Ticket {
         return ticketPrice;
     }
 
-    public void setTicketPrice(double ticketPrice) {
+    public void setTicketPrice(BigDecimal ticketPrice) {
         this.ticketPrice = ticketPrice;
     }
 
@@ -67,5 +72,21 @@ public class Ticket {
 
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getEventName() {
+        return eventName;
+    }
+
+    public void setEventName(String eventName) {
+        this.eventName = eventName;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }

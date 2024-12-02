@@ -7,22 +7,16 @@ import java.util.Objects;
 public class Customer extends User implements Runnable {
     private boolean isVIP;
     private TicketPool ticketPool;
-    private int quantity;
     private static double customerRetrievalRate = Objects.requireNonNull(GsonSerializer.deserializeConfig()).getCustomerRetrievalRate();
 
-    public Customer(String customerName, String clientAddress, String clientEmail, String clientTel, boolean isVIP, int quantity, TicketPool ticketPool) {
+    public Customer(String customerName, String clientAddress, String clientEmail, String clientTel, boolean isVIP, TicketPool ticketPool) {
         super(customerName, clientAddress, clientEmail, clientTel);
         this.isVIP = isVIP;
         this.ticketPool = ticketPool;
-        this.quantity = quantity;
     }
 
     public boolean getIsVIP() {
         return isVIP;
-    }
-
-    public int getQuantity() {
-        return quantity;
     }
 
     public double getCustomerRetrievalRate() {
@@ -40,9 +34,8 @@ public class Customer extends User implements Runnable {
     @Override
     public void run () {
         try {
-            while (ticketPool.getTicketsToBePurchased().get() != 0 && (quantity>0)) {
+            while (ticketPool.getTicketsToBePurchased().get() != 0) {
                 Ticket ticket = ticketPool.removeTicket(this, LocalDateTime.now().toString());
-                quantity--;
                 if (ticket == null) {
                     break;
                 }

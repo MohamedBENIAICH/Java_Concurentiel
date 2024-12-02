@@ -48,10 +48,7 @@ public class User {
                 } else {
                     System.out.println("Invalid response. Premium features are unavailable at this time:)");
                 }
-                System.out.println("Enter the number of tickets you wish to purchase.");
-                int noOfTickets = input.nextInt();
-                input.nextLine();
-                return new Customer(name, address, email, tel, isVIP, noOfTickets, ticketPool);
+                return new Customer(name, address, email, tel, isVIP, ticketPool);
             }
         }
     }

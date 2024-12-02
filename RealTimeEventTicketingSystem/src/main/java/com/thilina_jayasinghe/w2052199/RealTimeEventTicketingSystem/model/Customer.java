@@ -13,6 +13,7 @@ public class Customer {
     private String customerAddress;
     private String customerEmail;
     private String customerTel;
+    private int purchaseQuantity;
 
     public int getCustomerId() {
         return customerId;
@@ -52,5 +53,13 @@ public class Customer {
 
     public void setCustomerTel(String customerTel) {
         this.customerTel = customerTel;
+    }
+
+    public int getPurchaseQuantity() {
+        return purchaseQuantity;
+    }
+
+    public void setPurchaseQuantity(int purchaseQuantity) {
+        this.purchaseQuantity = purchaseQuantity;
     }
 }

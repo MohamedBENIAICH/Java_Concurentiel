@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 public class TicketPool {
 
-    private ConcurrentLinkedQueue<Ticket> ticketPool;
+    private ConcurrentLinkedQueue<Ticket> ticketList;
     private static int maxTicketCapacity;
     private static int totalTickets;
     private AtomicInteger ticketCount = new AtomicInteger(0);
@@ -22,14 +22,14 @@ public class TicketPool {
     private static final Logger logger = Logger.getLogger(TicketPool.class.getName());
 
     public TicketPool() {
-        ticketPool = new ConcurrentLinkedQueue<>();
+        ticketList = new ConcurrentLinkedQueue<>();
         // need to get total tickets, maximum ticket capacity through a web socket connection
     }
 
-    private void addTickets(Ticket ticket) {
+    protected void addTickets(Ticket ticket) {
         try {
             reentrantLock.lock();
-            while ((ticketPool.size() == maxTicketCapacity) && ticketCount.get() != totalTickets) {
+            while ((ticketList.size() == maxTicketCapacity) && ticketCount.get() != totalTickets) {
                 logger.warning("Queue is full. Waiting for consumer...");
                 condition.await();
                 logger.warning("Vendor got notified from consumer");
@@ -38,7 +38,7 @@ public class TicketPool {
                 return;
             }
             ticketCount.incrementAndGet();
-            ticketPool.add(ticket);
+            ticketList.add(ticket);
             logger.info(ticket.getVendor() + " released ticket number " + ticketCount);
             condition.signalAll();
         } catch (InterruptedException e) {
@@ -48,22 +48,22 @@ public class TicketPool {
         }
     }
 
-    private Ticket removeTicket(String customerName, LocalDateTime timestamp) {
+    protected Ticket removeTicket(String customerName, LocalDateTime timestamp) {
         try {
             reentrantLock.lock();
             condition.signalAll();
-            while (ticketPool.isEmpty() && unpurchasedTickets.get() != 0 && !Thread.currentThread().isInterrupted()) {
+            while (ticketList.isEmpty() && unpurchasedTickets.get() != 0 && !Thread.currentThread().isInterrupted()) {
                 condition.await();
                 logger.warning("Queue is empty. Waiting for Producer...");
             }
             if (unpurchasedTickets.get() == 0 || Thread.currentThread().isInterrupted()) {
                 return null;
             }
-            Ticket ticket = ticketPool.peek();
+            Ticket ticket = ticketList.peek();
             if (ticket != null) {
                 ticket.setCustomer(customerName);
                 ticket.setTimestamp(Timestamp.valueOf(timestamp));
-                ticketPool.remove();
+                ticketList.remove();
                 unpurchasedTickets.decrementAndGet();
                 logger.info(ticket.toString());
             }
@@ -75,5 +75,21 @@ public class TicketPool {
         } finally {
             reentrantLock.unlock();
         }
+    }
+
+    public AtomicInteger getTicketCount() {
+        return ticketCount;
+    }
+
+    public void setTicketCount(AtomicInteger ticketCount) {
+        this.ticketCount = ticketCount;
+    }
+
+    public AtomicInteger getUnpurchasedTickets() {
+        return unpurchasedTickets;
+    }
+
+    public void setUnpurchasedTickets(AtomicInteger unpurchasedTickets) {
+        this.unpurchasedTickets = unpurchasedTickets;
     }
 }

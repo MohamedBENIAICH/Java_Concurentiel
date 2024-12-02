@@ -13,6 +13,9 @@ public class Vendor {
     private String address;
     private String email;
     private String telNo;
+    private String eventName;
+    private String location;
+    private int ticketsPerRelease;
 
     public Integer getVendorId() {
         return vendorId;
@@ -52,5 +55,29 @@ public class Vendor {
 
     public void setTelNo(String telNo) {
         this.telNo = telNo;
+    }
+
+    public String getEventName() {
+        return eventName;
+    }
+
+    public void setEventName(String eventName) {
+        this.eventName = eventName;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public int getTicketsPerRelease() {
+        return ticketsPerRelease;
+    }
+
+    public void setTicketsPerRelease(int ticketsPerRelease) {
+        this.ticketsPerRelease = ticketsPerRelease;
     }
 }
