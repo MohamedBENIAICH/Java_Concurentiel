@@ -15,16 +15,16 @@ import java.util.List;
 public class TicketController {
 
     @Autowired
-    private TicketService ticketSalesService;
+    private TicketService ticketService;
 
     @PostMapping("/save/ticket")
-    public Ticket saveTicketSales(Ticket ticket) {
-        return ticketSalesService.saveTicketSales(ticket);
+    public Ticket saveTicket(Ticket ticket) {
+        return ticketService.saveTicket(ticket);
     }
 
     @GetMapping("/get/tickets")
     public List<Ticket> getTickets() {
-        return ticketSalesService.getTickets();
+        return ticketService.getTickets();
     }
 
 }

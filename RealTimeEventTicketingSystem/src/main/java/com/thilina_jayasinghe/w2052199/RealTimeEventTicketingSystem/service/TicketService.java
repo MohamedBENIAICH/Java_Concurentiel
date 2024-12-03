@@ -14,7 +14,7 @@ public class TicketService {
     @Autowired
     private TicketRepository ticketRepository;
 
-    public Ticket saveTicketSales(Ticket ticket) {
+    public Ticket saveTicket(Ticket ticket) {
         return ticketRepository.save(ticket);
     }
 

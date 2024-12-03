@@ -12,9 +12,9 @@ public class Ticket {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int transactionId;
 
-    private String vendor;
-
     private int ticketNo;
+
+    private String vendor;
 
     private String eventName;
 
@@ -22,7 +22,7 @@ public class Ticket {
 
     private String customer;
 
-    private double ticketPrice;
+    private BigDecimal ticketPrice;
 
     private Timestamp timestamp;
 
@@ -58,7 +58,7 @@ public class Ticket {
         this.ticketNo = ticketNo;
     }
 
-    public double getTicketPrice() {
+    public BigDecimal getTicketPrice() {
         return ticketPrice;
     }
 
