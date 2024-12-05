@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
@@ -13,50 +13,45 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
-import { VendorService } from '../vendor.service';
-import { Vendor } from './vendor.module';
+import { Customer } from './customer.module';
+import { CustomerService } from '../customer.service';
 
 @Component({
-  selector: 'app-vendor',
+  selector: 'app-customer',
   standalone: true,
   imports: [MatFormFieldModule, MatIconModule, MatInputModule, MatSelectModule, MatOptionModule, MatRadioModule, MatCheckboxModule, MatDividerModule, MatButtonModule, FormsModule, RouterModule, CommonModule],
   providers: [HttpClient],
-  templateUrl: './vendor.component.html',
-  styleUrl: './vendor.component.css'
+  templateUrl: './customer.component.html',
+  styleUrl: './customer.component.css'
 })
-export class VendorComponent {
+export class CustomerComponent {
 
-  vendor: Vendor = {
-    vendorName: "",
-    address: "",
-    location: "",
-    email: "",
-    telNo: 9412345678,
-    eventName: "",
-    ticketsPerRelease: 0
-  };
+	customer: Customer = {
+		customerName: "",
+		customerAddress: "",
+		customerEmail: "",
+		customerTel: 9412345678,
+		purchaseQuantity: 0
+	};
+	
+	clickFunc() {
+	console.log("This button works!");
+	}
 
-  clickFunc() {
-    console.log("This button works!");
-    }
+	constructor(private customerService: CustomerService, private router: Router, private activatedRoute: ActivatedRoute) {}
 
-  constructor(private vendorService: VendorService, private router: Router, private activatedRoute: ActivatedRoute) {
-
-  }
-
-  saveVendor(vendorForm: NgForm): void {
-    this.vendorService.saveVendor(this.vendor).subscribe(
-      {
-        next: (res: Vendor) => {
-          console.log(res);
-          vendorForm.reset();
-        },
-        error: (err: HttpErrorResponse) => {
-          console.log(err);
-        }
-      }
-    );
-  }
-
+	saveCustomer(customerForm: NgForm): void {
+		this.customerService.saveCustomer(this.customer).subscribe(
+		  {
+			next: (res: Customer) => {
+			  console.log(res);
+			  customerForm.reset();
+			},
+			error: (err: HttpErrorResponse) => {
+			  console.log(err);
+			}
+		  }
+		);
+	  }
 
 }

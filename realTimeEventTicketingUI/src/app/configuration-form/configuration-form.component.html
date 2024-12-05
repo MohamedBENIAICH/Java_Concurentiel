@@ -1,1 +1,129 @@
-<p>configuration-form works!</p>
+<div class="container">
+  <span class="topic">Configure Settings</span>
+  <form
+    #configurationForm="ngForm"
+    (ngSubmit)="saveConfiguration(configurationForm)"
+  >
+    <!-- Total Tickets -->
+    <mat-form-field appearance="outline">
+      <mat-label>Total Tickets</mat-label>
+      <input
+        matInput
+        placeholder="Total Tickets"
+        name="totalTickets"
+        [(ngModel)]="configuration.totalTickets"
+        #totalTickets="ngModel"
+        required
+        pattern="^[1-9][0-9]+$"
+        (ngModelChange)="validateTotalTickets()"
+      />
+      <mat-icon matSuffix>person</mat-icon>
+      <mat-error *ngIf="totalTickets.invalid && totalTickets.touched">
+        <span *ngIf="totalTickets.errors?.['required']"
+          >Total tickets are required.</span
+        >
+        <span *ngIf="totalTickets.errors?.['pattern']"
+          >Total tickets must be a number.</span
+        >
+        <span *ngIf="validationErrors.totalTickets">
+          {{ validationErrors.totalTickets }}
+        </span>
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Vendor Ticket Release Interval -->
+    <mat-form-field appearance="outline">
+      <mat-label>Vendor Ticket Release Interval</mat-label>
+      <input
+        matInput
+        placeholder="Vendor Ticket Release Interval"
+        name="ticketReleaseRate"
+        [(ngModel)]="configuration.ticketReleaseRate"
+        #ticketReleaseRate="ngModel"
+        required
+        pattern="^[1-9]{1}"
+        (ngModelChange)="validateIntervals()"
+      />
+      <mat-icon matSuffix>call</mat-icon>
+      <mat-error *ngIf="ticketReleaseRate.invalid && ticketReleaseRate.touched">
+        <span *ngIf="ticketReleaseRate.errors?.['required']"
+          >This field is required.</span
+        >
+        <span *ngIf="ticketReleaseRate.errors?.['pattern']"
+          >Must be a number.</span
+        >
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Customer Ticket Retrieval Interval -->
+    <mat-form-field appearance="outline">
+      <mat-label>Customer Ticket Retrieval Interval</mat-label>
+      <input
+        matInput
+        placeholder="Customer Ticket Retrieval Interval"
+        name="customerRetrievalRate"
+        [(ngModel)]="configuration.customerRetrievalRate"
+        #customerRetrievalRate="ngModel"
+        required
+        pattern="^[1-9]{1}"
+        (ngModelChange)="validateIntervals()"
+      />
+      <mat-icon matSuffix>apartment</mat-icon>
+      <mat-error
+        *ngIf="customerRetrievalRate.invalid && customerRetrievalRate.touched"
+      >
+        <span *ngIf="customerRetrievalRate.errors?.['required']"
+          >This field is required.</span
+        >
+        <span *ngIf="customerRetrievalRate.errors?.['pattern']"
+          >Must be a number.</span
+        >
+        <span *ngIf="validationErrors.intervals">
+          {{ validationErrors.intervals }}
+        </span>
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Maximum Ticket Capacity of Buffer -->
+    <mat-form-field appearance="outline">
+      <mat-label>Maximum Ticket Capacity of Buffer</mat-label>
+      <input
+        matInput
+        placeholder="Maximum Ticket Capacity of Buffer"
+        name="maxTicketCapacity"
+        [(ngModel)]="configuration.maxTicketCapacity"
+        #maxTicketCapacity="ngModel"
+        required
+        pattern="^[1-9][0-9]+$"
+        (ngModelChange)="validateMaxCapacity()"
+      />
+      <mat-icon matSuffix>apartment</mat-icon>
+      <mat-error *ngIf="maxTicketCapacity.invalid && maxTicketCapacity.touched">
+        <span *ngIf="maxTicketCapacity.errors?.['required']"
+          >This field is required.</span
+        >
+        <span *ngIf="maxTicketCapacity.errors?.['pattern']"
+          >Must be a number.</span
+        >
+        <span *ngIf="validationErrors.maxCapacity">
+          {{ validationErrors.maxCapacity }}
+        </span>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-divider></mat-divider>
+
+    <div class="button-section">
+      <button mat-stroked-button type="button" (click)="clearForm()">
+        Clear
+      </button>
+      <button
+        mat-flat-button
+        type="submit"
+        [disabled]="configurationForm.invalid"
+      >
+        Save
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,20 +1,24 @@
 <div class="container">
-  <span class="topic">Vendor Registration</span>
-  <form #vendorForm="ngForm" (ngSubmit)="saveVendor(vendorForm)">
+  <span class="topic">Customer Registration</span>
+  <form #customerForm="ngForm" (ngSubmit)="saveCustomer(customerForm)">
     <mat-form-field appearance="outline">
       <mat-label>Name</mat-label>
       <input
         matInput
         placeholder="Name"
         name="Name"
-        [(ngModel)]="vendor.vendorName"
+        [(ngModel)]="customer.customerName"
         required
+        pattern="^[a-zA-Z\s]+$"
         #name="ngModel"
       />
       <mat-icon matSuffix>person</mat-icon>
-      <mat-error *ngIf="name.invalid && name.touched"
-        >Name is required.</mat-error
-      >
+      <mat-error *ngIf="name.invalid && name.touched">
+        <span *ngIf="name.errors?.['required']">Name is required.</span>
+        <span *ngIf="name.errors?.['pattern']"
+          >Name cannot contain numbers.</span
+        >
+      </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
@@ -23,13 +27,17 @@
         matInput
         placeholder="Address"
         name="Address"
-        [(ngModel)]="vendor.address"
+        [(ngModel)]="customer.customerAddress"
         required
+        pattern="^[a-zA-Z\s,.-]+$"
         #address="ngModel"
       />
       <mat-icon matSuffix>call</mat-icon>
       <mat-error *ngIf="address.invalid && address.touched">
-        Address is required.
+        <span *ngIf="address.errors?.['required']">Address is required.</span>
+        <span *ngIf="address.errors?.['pattern']"
+          >Address cannot contain numbers.</span
+        >
       </mat-error>
     </mat-form-field>
 
@@ -39,7 +47,7 @@
         matInput
         placeholder="Email"
         name="Email"
-        [(ngModel)]="vendor.email"
+        [(ngModel)]="customer.customerEmail"
         required
         email
         #email="ngModel"
@@ -57,7 +65,7 @@
         matInput
         placeholder="Mobile"
         name="Telephone Number"
-        [(ngModel)]="vendor.telNo"
+        [(ngModel)]="customer.customerTel"
         required
         pattern="^[0-9]{10}$"
         #tel="ngModel"
@@ -74,44 +82,12 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Event Name</mat-label>
+      <mat-label>Amount of tickets</mat-label>
       <input
         matInput
-        placeholder="Name of the event"
-        name="Event Name"
-        [(ngModel)]="vendor.eventName"
-        required
-        #event="ngModel"
-      />
-      <mat-icon matSuffix>apartment</mat-icon>
-      <mat-error *ngIf="event.invalid && event.touched">
-        Event name is required.
-      </mat-error>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Location</mat-label>
-      <input
-        matInput
-        placeholder="Venue of the event"
-        name="Location"
-        [(ngModel)]="vendor.location"
-        required
-        #location="ngModel"
-      />
-      <mat-icon matSuffix>apartment</mat-icon>
-      <mat-error *ngIf="location.invalid && location.touched">
-        Event location is required.
-      </mat-error>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Tickets Per Release</mat-label>
-      <input
-        matInput
-        placeholder="Number of tickets per single release"
-        name="Tickets Per Release"
-        [(ngModel)]="vendor.ticketsPerRelease"
+        placeholder="Number of tickets to be purchased"
+        name="Amount of tickets"
+        [(ngModel)]="customer.purchaseQuantity"
         required
         pattern="^[1-9]{1}$"
         #quantity="ngModel"
@@ -121,19 +97,17 @@
         <span *ngIf="quantity.errors?.['required']"
           >This field is required.</span
         >
-        <span *ngIf="quantity.errors?.['pattern']"
-          >Enter a single digit number.</span
-        >
+        <span *ngIf="quantity.errors?.['pattern']">Enter a valid number.</span>
       </mat-error>
     </mat-form-field>
 
     <mat-divider></mat-divider>
 
     <div class="button-section">
-      <button mat-stroked-button type="reset" (click)="vendorForm.reset()">
+      <button mat-stroked-button type="reset" (click)="customerForm.reset()">
         Clear
       </button>
-      <button mat-flat-button type="submit" [disabled]="vendorForm.invalid">
+      <button mat-flat-button type="submit" [disabled]="customerForm.invalid">
         Save
       </button>
     </div>

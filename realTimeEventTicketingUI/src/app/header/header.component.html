@@ -1,3 +1,15 @@
 <mat-toolbar>
   <span>Event Booking System</span>
+  <div class="button-container">
+    <button mat-button routerLink="/logs">Logs</button>
+    <button mat-button routerLink="/config-settings">
+      Configuration settings
+    </button>
+    <button mat-button routerLink="/ticketpool">TicketPool</button>
+    <button mat-button [matMenuTriggerFor]="menu">Registration</button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item routerLink="/customer">Customer</button>
+      <button mat-menu-item routerLink="/vendor">Vendor</button>
+    </mat-menu>
+  </div>
 </mat-toolbar>
