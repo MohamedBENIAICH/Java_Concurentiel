@@ -113,7 +113,7 @@ export class ConfigurationFormComponent implements OnInit {
 	
 		if (releaseRate <= 0 || retrievalRate <= 0 || retrievalRate >= 10) {
 		  this.validationErrors.intervals =
-			'Retrieval interval must be between 0 and 10. Release rate must be greater than 0.';
+			'Retrieval interval must be between 0 and 10.';
 		} else if (releaseRate > retrievalRate) {
 		  this.validationErrors.intervals =
 			'Release interval must not exceed retrieval interval.';

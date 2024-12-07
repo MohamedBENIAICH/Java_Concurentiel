@@ -16,7 +16,8 @@ public class ConfigurationService {
     }
 
     public Configuration getConfiguration() {
-        return configurationRepository.findById(1).orElseThrow();
+        return configurationRepository.findById(1)
+                .orElseThrow(() -> new IllegalStateException("Configuration with ID 1 not found"));
     }
 
     public Configuration updateConfiguration(Configuration configuration) {

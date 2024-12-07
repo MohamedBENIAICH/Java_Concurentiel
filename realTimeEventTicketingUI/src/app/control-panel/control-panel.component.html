@@ -1,1 +1,10 @@
-<p>control-panel works!</p>
+<div class="control-panel">
+  <button (click)="startThreads()" class="start-button">Start</button>
+  <button
+    (click)="stopThreads()"
+    class="stop-button"
+    [disabled]="!threadsRunning"
+  >
+    Stop
+  </button>
+</div>

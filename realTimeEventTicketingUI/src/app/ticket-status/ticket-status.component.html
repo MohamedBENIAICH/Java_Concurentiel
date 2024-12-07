@@ -1,1 +1,18 @@
-<p>ticket-status works!</p>
+<div class="status-container">
+  <h2>Ticket Pool Status</h2>
+  <div *ngIf="ticketPoolStatus">
+    <p><strong>Total Tickets:</strong> {{ ticketPoolStatus.totalTickets }}</p>
+    <p><strong>Tickets Sold:</strong> {{ ticketPoolStatus.ticketsSold }}</p>
+    <p>
+      <strong>Tickets Remaining:</strong>
+      {{ ticketPoolStatus.ticketsRemaining }}
+    </p>
+    <p><strong>Vendors Active:</strong> {{ ticketPoolStatus.activeVendors }}</p>
+    <p>
+      <strong>Customers Active:</strong> {{ ticketPoolStatus.activeCustomers }}
+    </p>
+  </div>
+  <div *ngIf="!ticketPoolStatus">
+    <p>Loading ticket pool status...</p>
+  </div>
+</div>

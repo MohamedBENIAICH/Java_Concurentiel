@@ -1,29 +1,46 @@
 package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.tasks;
 
+import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.model.Configuration;
 import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.model.Ticket;
+import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.service.ConfigurationService;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
+@Component
 public class TicketPool {
 
+    @Autowired
+    private ConfigurationService configurationService;
+
     private ConcurrentLinkedQueue<Ticket> ticketList;
-    private static int maxTicketCapacity;
-    private static int totalTickets;
+    private int maxTicketCapacity;
+    private int totalTickets;
     private AtomicInteger ticketCount = new AtomicInteger(0);
-    private AtomicInteger unpurchasedTickets = new AtomicInteger(totalTickets);
+    private AtomicInteger unpurchasedTickets;
     ReentrantLock reentrantLock = new ReentrantLock();
     Condition condition = reentrantLock.newCondition();
     private static final Logger logger = Logger.getLogger(TicketPool.class.getName());
 
     public TicketPool() {
         ticketList = new ConcurrentLinkedQueue<>();
-        // need to get total tickets, maximum ticket capacity through a web socket connection
+    }
+
+    public void initialize(int totalTickets, int maxTicketCapacity) {
+        this.totalTickets = totalTickets;
+        this.maxTicketCapacity = maxTicketCapacity;
+        this.unpurchasedTickets = new AtomicInteger(totalTickets);
+        logger.info("TicketPool initialized with totalTickets: " + totalTickets + " and maxTicketCapacity: " + maxTicketCapacity);
     }
 
     protected void addTickets(Ticket ticket) {
@@ -91,5 +108,31 @@ public class TicketPool {
 
     public void setUnpurchasedTickets(AtomicInteger unpurchasedTickets) {
         this.unpurchasedTickets = unpurchasedTickets;
+    }
+
+    public Object getStatus() {
+        Map<String, Object> status = new HashMap<>();
+
+        // Validate and add totalTickets
+        if (totalTickets > 0) {
+            status.put("totalTickets", totalTickets);
+        }
+
+        // Validate and add unpurchasedTickets
+        if (unpurchasedTickets != null) {
+            status.put("unpurchasedTickets", unpurchasedTickets.get());
+        }
+
+        // Validate and add currentQueueSize
+        if (ticketList != null) {
+            status.put("currentQueueSize", ticketList.size());
+        }
+
+        // Validate and add maxTicketCapacity
+        if (maxTicketCapacity > 0) {
+            status.put("maxTicketCapacity", maxTicketCapacity);
+        }
+
+        return status;
     }
 }

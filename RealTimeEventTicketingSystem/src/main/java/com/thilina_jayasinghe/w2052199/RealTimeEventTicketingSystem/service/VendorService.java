@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class VendorService implements Runnable {
+public class VendorService {
 
     @Autowired
     private VendorRepository vendorRepository;
@@ -30,9 +30,5 @@ public class VendorService implements Runnable {
 
     public void deleteVendor(Integer vendorId) {
         vendorRepository.deleteById(vendorId);
-    }
-
-    @Override
-    public void run() {
     }
 }
