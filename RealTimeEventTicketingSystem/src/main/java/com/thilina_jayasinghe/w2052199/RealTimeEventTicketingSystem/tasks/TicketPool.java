@@ -1,11 +1,7 @@
 package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.tasks;
 
-import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.model.Configuration;
+
 import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.model.Ticket;
-import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.service.ConfigurationService;
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -17,29 +13,23 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
-@Component
-public class TicketPool {
 
-    @Autowired
-    private ConfigurationService configurationService;
+public class TicketPool {
 
     private ConcurrentLinkedQueue<Ticket> ticketList;
     private int maxTicketCapacity;
     private int totalTickets;
     private AtomicInteger ticketCount = new AtomicInteger(0);
-    private AtomicInteger unpurchasedTickets;
+    private AtomicInteger unsoldTickets;
     ReentrantLock reentrantLock = new ReentrantLock();
     Condition condition = reentrantLock.newCondition();
     private static final Logger logger = Logger.getLogger(TicketPool.class.getName());
 
-    public TicketPool() {
+    public TicketPool(int totalTickets, int maxTicketCapacity) {
         ticketList = new ConcurrentLinkedQueue<>();
-    }
-
-    public void initialize(int totalTickets, int maxTicketCapacity) {
         this.totalTickets = totalTickets;
         this.maxTicketCapacity = maxTicketCapacity;
-        this.unpurchasedTickets = new AtomicInteger(totalTickets);
+        this.unsoldTickets = new AtomicInteger(totalTickets);
         logger.info("TicketPool initialized with totalTickets: " + totalTickets + " and maxTicketCapacity: " + maxTicketCapacity);
     }
 
@@ -69,11 +59,11 @@ public class TicketPool {
         try {
             reentrantLock.lock();
             condition.signalAll();
-            while (ticketList.isEmpty() && unpurchasedTickets.get() != 0 && !Thread.currentThread().isInterrupted()) {
+            while (ticketList.isEmpty() && unsoldTickets.get() != 0 && !Thread.currentThread().isInterrupted()) {
                 condition.await();
                 logger.warning("Queue is empty. Waiting for Producer...");
             }
-            if (unpurchasedTickets.get() == 0 || Thread.currentThread().isInterrupted()) {
+            if (unsoldTickets.get() == 0 || Thread.currentThread().isInterrupted()) {
                 return null;
             }
             Ticket ticket = ticketList.peek();
@@ -81,7 +71,7 @@ public class TicketPool {
                 ticket.setCustomer(customerName);
                 ticket.setTimestamp(Timestamp.valueOf(timestamp));
                 ticketList.remove();
-                unpurchasedTickets.decrementAndGet();
+                unsoldTickets.decrementAndGet();
                 logger.info(ticket.toString());
             }
             condition.signalAll();
@@ -102,12 +92,12 @@ public class TicketPool {
         this.ticketCount = ticketCount;
     }
 
-    public AtomicInteger getUnpurchasedTickets() {
-        return unpurchasedTickets;
+    public AtomicInteger getUnsoldTickets() {
+        return unsoldTickets;
     }
 
-    public void setUnpurchasedTickets(AtomicInteger unpurchasedTickets) {
-        this.unpurchasedTickets = unpurchasedTickets;
+    public void setUnsoldTickets(AtomicInteger unsoldTickets) {
+        this.unsoldTickets = unsoldTickets;
     }
 
     public Object getStatus() {
@@ -118,9 +108,9 @@ public class TicketPool {
             status.put("totalTickets", totalTickets);
         }
 
-        // Validate and add unpurchasedTickets
-        if (unpurchasedTickets != null) {
-            status.put("unpurchasedTickets", unpurchasedTickets.get());
+        // Validate and add unsoldTickets
+        if (unsoldTickets != null) {
+            status.put("unsoldTickets", unsoldTickets.get());
         }
 
         // Validate and add currentQueueSize
@@ -134,5 +124,13 @@ public class TicketPool {
         }
 
         return status;
+    }
+
+    public int getTotalTickets() {
+        return totalTickets;
+    }
+
+    public void setTotalTickets(int totalTickets) {
+        this.totalTickets = totalTickets;
     }
 }

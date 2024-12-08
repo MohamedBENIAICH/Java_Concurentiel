@@ -10,7 +10,7 @@ public class Configuration {
     private final int configId = 1;
     private int totalTickets;
     private double ticketReleaseRate;
-    private double customerRetrievalInterval;
+    private double customerRetrievalRate;
     private int maxTicketCapacity;
 
     public int getTotalTickets() {
@@ -29,12 +29,12 @@ public class Configuration {
         this.ticketReleaseRate = ticketReleaseRate;
     }
 
-    public double getCustomerRetrievalInterval() {
-        return customerRetrievalInterval;
+    public double getCustomerRetrievalRate() {
+        return customerRetrievalRate;
     }
 
-    public void setCustomerRetrievalInterval(double customerRetrievalInterval) {
-        this.customerRetrievalInterval = customerRetrievalInterval;
+    public void setCustomerRetrievalRate(double customerRetrievalRate) {
+        this.customerRetrievalRate = customerRetrievalRate;
     }
 
     public int getMaxTicketCapacity() {

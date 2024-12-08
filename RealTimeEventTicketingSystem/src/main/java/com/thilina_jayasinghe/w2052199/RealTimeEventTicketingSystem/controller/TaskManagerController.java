@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin("http://localhost:4200")
 public class TaskManagerController {
+
     @Autowired
     private TaskManager taskManager;
 
@@ -25,9 +26,4 @@ public class TaskManagerController {
         return ResponseEntity.ok("Threads stopped.");
     }
 
-    @PostMapping("/configure")
-    public ResponseEntity<String> configureTicketPool() {
-        taskManager.initializeTicketPool();
-        return ResponseEntity.ok("TicketPool configuration updated.");
-    }
 }

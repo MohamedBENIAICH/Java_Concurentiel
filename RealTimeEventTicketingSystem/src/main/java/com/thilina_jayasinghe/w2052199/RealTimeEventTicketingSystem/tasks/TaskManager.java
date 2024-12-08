@@ -3,10 +3,10 @@ package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.tasks;
 import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.model.Configuration;
 import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.model.Customer;
 import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.model.Vendor;
+import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.repository.ConfigurationRepository;
 import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.repository.CustomerRepository;
 import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.repository.VendorRepository;
-import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.service.ConfigurationService;
-import jakarta.annotation.PostConstruct;
+import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,25 +26,29 @@ public class TaskManager {
     private CustomerRepository customerRepository;
 
     @Autowired
-    private ConfigurationService configurationService;
+    private ConfigurationRepository configurationRepository;
 
     @Autowired
-    private TicketPool ticketPool;
+    private TicketService ticketService;
 
+    private TicketPool ticketPool;
+    private Configuration configuration;
     private ExecutorService executorService;
     private Map<Integer, Future<?>> vendorTasks = new ConcurrentHashMap<>();
     private Map<Integer, Future<?>> customerTasks = new ConcurrentHashMap<>();
     private boolean isRunning = false;
 
-    @PostConstruct
-    public void initializeTicketPool() {
+    public synchronized void initializeTicketPool() {
         try {
-            Configuration configuration = configurationService.getConfiguration(); // Check for configuration
-            ticketPool = new TicketPool(); // Create and initialize TicketPool
-            ticketPool.initialize(configuration.getTotalTickets(), configuration.getMaxTicketCapacity());
-            System.out.println("TicketPool initialized successfully.");
+            // Fetch configuration from the ConfigurationService
+            configuration = configurationRepository.findById(1).orElseThrow();
+
+            // Initialize TicketPool using the configuration details
+            ticketPool = new TicketPool(configuration.getTotalTickets(), configuration.getMaxTicketCapacity());
+
+            System.out.println("TicketPool initialized successfully with configuration: " + configuration);
         } catch (IllegalStateException e) {
-            System.out.println("No configuration found. TicketPool will not be initialized.");
+            System.out.println("Failed to initialize TicketPool: " + e.getMessage());
         }
     }
 
@@ -58,13 +62,13 @@ public class TaskManager {
         List<Customer> customers = (List<Customer>) customerRepository.findAll();
 
         for (Vendor vendor : vendors) {
-            VendorTask vendorTask = new VendorTask(vendor, ticketPool);
+            VendorTask vendorTask = new VendorTask(vendor, ticketPool, configuration.getTicketReleaseRate());
             Future<?> future = executorService.submit(vendorTask);
             vendorTasks.put(vendor.getVendorId(), future);
         }
 
         for (Customer customer : customers) {
-            CustomerTask customerTask = new CustomerTask(customer, ticketPool);
+            CustomerTask customerTask = new CustomerTask(customer, ticketPool, configuration.getCustomerRetrievalRate(), ticketService);
             Future<?> future = executorService.submit(customerTask);
             customerTasks.put(customer.getCustomerId(), future);
         }

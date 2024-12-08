@@ -111,9 +111,9 @@ export class ConfigurationFormComponent implements OnInit {
 		const releaseRate = Number(this.configuration.ticketReleaseRate);
 		const retrievalRate = Number(this.configuration.customerRetrievalRate);
 	
-		if (releaseRate <= 0 || retrievalRate <= 0 || retrievalRate >= 10) {
+		if (releaseRate <= 0 || retrievalRate <= 0 || retrievalRate > releaseRate) {
 		  this.validationErrors.intervals =
-			'Retrieval interval must be between 0 and 10.';
+			'Retrieval interval must be greater tha 0';
 		} else if (releaseRate > retrievalRate) {
 		  this.validationErrors.intervals =
 			'Release interval must not exceed retrieval interval.';

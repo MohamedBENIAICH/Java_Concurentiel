@@ -2,6 +2,8 @@ package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.model;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "vendor")
 public class Vendor {
@@ -15,6 +17,7 @@ public class Vendor {
     private String telNo;
     private String eventName;
     private String location;
+    private BigDecimal ticketPrice;
     private int ticketsPerRelease;
 
     public Integer getVendorId() {
@@ -79,5 +82,13 @@ public class Vendor {
 
     public void setTicketsPerRelease(int ticketsPerRelease) {
         this.ticketsPerRelease = ticketsPerRelease;
+    }
+
+    public BigDecimal getTicketPrice() {
+        return ticketPrice;
+    }
+
+    public void setTicketPrice(BigDecimal ticketPrice) {
+        this.ticketPrice = ticketPrice;
     }
 }
