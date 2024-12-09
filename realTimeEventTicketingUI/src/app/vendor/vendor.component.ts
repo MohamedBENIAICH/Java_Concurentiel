@@ -33,7 +33,8 @@ export class VendorComponent {
     email: "",
     telNo: 9412345678,
     eventName: "",
-    ticketsPerRelease: 0
+    ticketsPerRelease: 0,
+    ticketPrice: 0
   };
 
   clickFunc() {

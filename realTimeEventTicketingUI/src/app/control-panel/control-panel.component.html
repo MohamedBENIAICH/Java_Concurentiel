@@ -1,10 +1,15 @@
 <div class="control-panel">
-  <button (click)="startThreads()" class="start-button">Start</button>
+  <button mat-fab extended (click)="startThreads()" class="start-button">
+    <mat-icon>play_circle</mat-icon>Start
+  </button>
   <button
+    mat-fab
+    extended
     (click)="stopThreads()"
     class="stop-button"
     [disabled]="!threadsRunning"
   >
+    <mat-icon>stop_circle</mat-icon>
     Stop
   </button>
 </div>

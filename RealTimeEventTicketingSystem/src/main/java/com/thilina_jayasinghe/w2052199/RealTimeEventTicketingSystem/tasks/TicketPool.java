@@ -5,7 +5,9 @@ import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.model.Ticket
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -24,29 +26,31 @@ public class TicketPool {
     ReentrantLock reentrantLock = new ReentrantLock();
     Condition condition = reentrantLock.newCondition();
     private static final Logger logger = Logger.getLogger(TicketPool.class.getName());
+    // Stores log messages in memory for retrieval
+    private List<String> logs = new ArrayList<>();
 
     public TicketPool(int totalTickets, int maxTicketCapacity) {
         ticketList = new ConcurrentLinkedQueue<>();
         this.totalTickets = totalTickets;
         this.maxTicketCapacity = maxTicketCapacity;
         this.unsoldTickets = new AtomicInteger(totalTickets);
-        logger.info("TicketPool initialized with totalTickets: " + totalTickets + " and maxTicketCapacity: " + maxTicketCapacity);
+        logMessages("TicketPool initialized with totalTickets: " + totalTickets + " and maxTicketCapacity: " + maxTicketCapacity, "INFO");
     }
 
     protected void addTickets(Ticket ticket) {
         try {
             reentrantLock.lock();
             while ((ticketList.size() == maxTicketCapacity) && ticketCount.get() != totalTickets) {
-                logger.warning("Queue is full. Waiting for consumer...");
+                logMessages("Queue is full. Waiting for consumer...", "WARNING");
                 condition.await();
-                logger.warning("Vendor got notified from consumer");
+                logMessages("Vendor got notified from consumer", "WARNING");
             }
             if (ticketCount.get() == totalTickets) {
                 return;
             }
             ticketCount.incrementAndGet();
             ticketList.add(ticket);
-            logger.info(ticket.getVendor() + " released ticket number " + ticketCount);
+            logMessages(ticket.getVendor() + " released ticket number " + ticketCount, "INFO");
             condition.signalAll();
         } catch (InterruptedException e) {
             System.out.println(e.getMessage());
@@ -61,7 +65,7 @@ public class TicketPool {
             condition.signalAll();
             while (ticketList.isEmpty() && unsoldTickets.get() != 0 && !Thread.currentThread().isInterrupted()) {
                 condition.await();
-                logger.warning("Queue is empty. Waiting for Producer...");
+                logMessages("Queue is empty. Waiting for Producer...", "WARNING");
             }
             if (unsoldTickets.get() == 0 || Thread.currentThread().isInterrupted()) {
                 return null;
@@ -72,7 +76,7 @@ public class TicketPool {
                 ticket.setTimestamp(Timestamp.valueOf(timestamp));
                 ticketList.remove();
                 unsoldTickets.decrementAndGet();
-                logger.info(ticket.toString());
+                logMessages(ticket.toString(), "INFO");
             }
             condition.signalAll();
             return ticket;
@@ -132,5 +136,29 @@ public class TicketPool {
 
     public void setTotalTickets(int totalTickets) {
         this.totalTickets = totalTickets;
+    }
+
+    public void logMessages(String log, String level) {
+        if (level.equals("INFO")) {
+            logger.info(log);
+        } else {
+            logger.warning(log);
+        }
+
+        try {
+            reentrantLock.lock();
+            logs.add(log);
+        } finally {
+            reentrantLock.unlock();
+        }
+    }
+
+    public List<String> getLogs() {
+        try {
+            reentrantLock.lock();
+            return new ArrayList<>(logs);
+        } finally {
+            reentrantLock.unlock();
+        }
     }
 }

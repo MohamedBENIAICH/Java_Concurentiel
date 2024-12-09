@@ -27,7 +27,7 @@
         required
         #address="ngModel"
       />
-      <mat-icon matSuffix>call</mat-icon>
+      <mat-icon matSuffix>apartment</mat-icon>
       <mat-error *ngIf="address.invalid && address.touched">
         Address is required.
       </mat-error>
@@ -44,7 +44,7 @@
         email
         #email="ngModel"
       />
-      <mat-icon matSuffix>apartment</mat-icon>
+      <mat-icon matSuffix>alternate_email</mat-icon>
       <mat-error *ngIf="email.invalid && email.touched">
         <span *ngIf="email.errors?.['required']">Email is required.</span>
         <span *ngIf="email.errors?.['email']">Invalid email format.</span>
@@ -62,7 +62,7 @@
         pattern="^[0-9]{10}$"
         #tel="ngModel"
       />
-      <mat-icon matSuffix>apartment</mat-icon>
+      <mat-icon matSuffix>call</mat-icon>
       <mat-error *ngIf="tel.invalid && tel.touched">
         <span *ngIf="tel.errors?.['required']"
           >Telephone number is required.</span
@@ -83,7 +83,7 @@
         required
         #event="ngModel"
       />
-      <mat-icon matSuffix>apartment</mat-icon>
+      <mat-icon matSuffix>event</mat-icon>
       <mat-error *ngIf="event.invalid && event.touched">
         Event name is required.
       </mat-error>
@@ -99,7 +99,7 @@
         required
         #location="ngModel"
       />
-      <mat-icon matSuffix>apartment</mat-icon>
+      <mat-icon matSuffix>pin_drop</mat-icon>
       <mat-error *ngIf="location.invalid && location.touched">
         Event location is required.
       </mat-error>
@@ -116,13 +116,36 @@
         pattern="^[1-9]{1}$"
         #quantity="ngModel"
       />
-      <mat-icon matSuffix>apartment</mat-icon>
+      <mat-icon matSuffix>123</mat-icon>
       <mat-error *ngIf="quantity.invalid && quantity.touched">
         <span *ngIf="quantity.errors?.['required']"
           >This field is required.</span
         >
         <span *ngIf="quantity.errors?.['pattern']"
           >Enter a single digit number.</span
+        >
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Ticket Price</mat-label>
+      <input
+        matInput
+        type="number"
+        placeholder="Price of a Ticket"
+        name="ticketPrice"
+        [(ngModel)]="vendor.ticketPrice"
+        required
+        min="1"
+        #quantity="ngModel"
+      />
+      <mat-icon matSuffix>123</mat-icon>
+      <mat-error *ngIf="quantity.invalid && quantity.touched">
+        <span *ngIf="quantity.errors?.['required']"
+          >This field is required.</span
+        >
+        <span *ngIf="quantity.errors?.['min']"
+          >Price must be greater than 0.</span
         >
       </mat-error>
     </mat-form-field>

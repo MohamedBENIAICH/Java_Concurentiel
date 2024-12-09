@@ -1,5 +1,6 @@
 package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.tasks;
 
+import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.event.TicketPoolInitializedEvent;
 import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.model.Configuration;
 import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.model.Customer;
 import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.model.Vendor;
@@ -8,6 +9,7 @@ import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.repository.C
 import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.repository.VendorRepository;
 import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -31,6 +33,9 @@ public class TaskManager {
     @Autowired
     private TicketService ticketService;
 
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+
     private TicketPool ticketPool;
     private Configuration configuration;
     private ExecutorService executorService;
@@ -46,6 +51,7 @@ public class TaskManager {
             // Initialize TicketPool using the configuration details
             ticketPool = new TicketPool(configuration.getTotalTickets(), configuration.getMaxTicketCapacity());
 
+            eventPublisher.publishEvent(new TicketPoolInitializedEvent(this));
             System.out.println("TicketPool initialized successfully with configuration: " + configuration);
         } catch (IllegalStateException e) {
             System.out.println("Failed to initialize TicketPool: " + e.getMessage());

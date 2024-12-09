@@ -5,5 +5,6 @@ export interface Vendor {
     telNo: number,
     eventName: string,
     location: string,
-    ticketsPerRelease: number
+    ticketsPerRelease: number,
+    ticketPrice: number
 }

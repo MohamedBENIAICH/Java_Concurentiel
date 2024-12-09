@@ -13,17 +13,24 @@ import { WebSocketService } from '../websocket.service';
 })
 export class LogDisplayComponent {
   logs: string[] = [];
-  private logsSubscription!: Subscription;  // non-null assertion operator
+  private logsSubscription!: Subscription; // Subscription to manage the observable
 
   constructor(private webSocketService: WebSocketService) {}
 
   ngOnInit(): void {
-    this.logsSubscription = this.webSocketService.getLogs().subscribe((logs) => {
-      this.logs = logs;
+    // Subscribe to the logs observable to receive updates
+    this.logsSubscription = this.webSocketService.getLogs().subscribe({
+      next: (logs) => {
+        this.logs = logs; // Update the logs list
+      },
+      error: (error) => {
+        console.error('Error fetching logs:', error);
+      },
     });
   }
 
   ngOnDestroy(): void {
+    // Unsubscribe to avoid memory leaks when the component is destroyed
     if (this.logsSubscription) {
       this.logsSubscription.unsubscribe();
     }

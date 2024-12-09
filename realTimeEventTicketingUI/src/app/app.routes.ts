@@ -7,6 +7,7 @@ import { ConfigurationFormComponent } from './configuration-form/configuration-f
 import { VendorComponent } from './vendor/vendor.component';
 import { ConfigurationResolver } from './configuration-resolver';
 import { CustomerComponent } from './customer/customer.component';
+import { TicketListComponent } from './ticket-list/ticket-list.component';
 
 export const routes: Routes = [
     {path: "", component: HomeComponent},
@@ -15,5 +16,6 @@ export const routes: Routes = [
     {path: "customer", component: CustomerComponent},
     {path: "logs", component: LogDisplayComponent},
     {path: "ticketpool", component: TicketStatusComponent},
+    {path: "ticket-list", component: TicketListComponent},
     {path: "**", component:PageNotFoundComponent}
 ];

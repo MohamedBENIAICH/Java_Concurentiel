@@ -3,3 +3,13 @@ mat-toolbar {
     justify-content: space-between;
     align-items: center;
 }
+
+.nav-text {
+    color: #ba005c;
+}
+
+.title {
+    cursor: pointer;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #3f001b;
+}

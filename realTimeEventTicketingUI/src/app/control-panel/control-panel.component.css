@@ -1,5 +1,8 @@
 .control-panel {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
+  display: flex;
+  justify-content: center;  /* Center horizontally */
+  align-items: center;      /* Center vertically */
+  margin-top: 50px;                /* Remove default margin */
+  color: #3f001b;
+  gap: 20px;
   }

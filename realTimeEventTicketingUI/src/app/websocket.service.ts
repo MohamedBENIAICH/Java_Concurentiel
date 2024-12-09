@@ -6,63 +6,64 @@ import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
   providedIn: 'root',
 })
 export class WebSocketService {
-  private ticketPoolSocket: WebSocketSubject<any>;
-  private logSocket: WebSocketSubject<any>;
-  
-  private statusSubject = new BehaviorSubject<any>(null); // To manage real-time ticket pool status
-  private logsSubject = new BehaviorSubject<string[]>([]); // To manage logs
+	private socket: WebSocketSubject<any>;
+	private statusSubject = new BehaviorSubject<any>(null); // Real-time ticket pool status
+	private logsSubject = new BehaviorSubject<string[]>([]); // Log messages
 
-  constructor() {
-    this.ticketPoolSocket = webSocket('ws://localhost:9090/status');
-    this.logSocket = webSocket('ws://localhost:9090/logs');
+	constructor() {
+		// Initialize WebSocket connection to match backend endpoint
+		this.socket = webSocket('ws://localhost:9090/ws-native');
 
-    // Automatically subscribe to WebSocket updates
-    this.listenToTicketPoolStatus();
-    this.listenToLogs();
-  }
+		// Listen to server messages
+		this.listenToServerMessages();
+	}
 
-  // Listen for ticket pool status updates
-  private listenToTicketPoolStatus() {
-    this.ticketPoolSocket.subscribe({
-      next: (message) => this.statusSubject.next(message),
-      error: (err) => console.error('Ticket Pool WebSocket error:', err),
-      complete: () => console.warn('Ticket Pool WebSocket connection closed'),
-    });
-  }
+	// Subscribe to WebSocket messages
+	private listenToServerMessages(): void {
+		this.socket.subscribe({
+		next: (message) => this.handleServerMessage(message),
+		error: (err) => console.error('WebSocket error:', err),
+		complete: () => console.warn('WebSocket connection closed'),
+		});
+	}
 
-  // Listen for logs
-  private listenToLogs() {
-    this.logSocket.subscribe({
-      next: (log) => this.addLog(log),
-      error: (err) => console.error('Log WebSocket error:', err),
-      complete: () => console.warn('Log WebSocket connection closed'),
-    });
-  }
+	// Process incoming server messages
+	private handleServerMessage(message: any): void {
+		switch (message.type) {
+		case 'status':
+			this.statusSubject.next(message.data); // Update status
+			break;
+		case 'log':
+			this.addLog(message.data); // Add to logs
+			break;
+		default:
+			console.warn('Unknown message type:', message.type);
+		}
+	}
 
-  // Add log to the logs array
-  private addLog(log: string) {
-    const currentLogs = this.logsSubject.value;
-    this.logsSubject.next([...currentLogs, log]);
-  }
+	// Add a log to the logsSubject
+	private addLog(log: string): void {
+		const currentLogs = this.logsSubject.value;
+		this.logsSubject.next([...currentLogs, log]);
+	}
 
-  // Get real-time ticket pool status
-  public getTicketPoolStatus(): Observable<any> {
-    return this.statusSubject.asObservable();
-  }
+	// Expose ticket pool status as an observable
+	public getTicketPoolStatus(): Observable<any> {
+		return this.statusSubject.asObservable();
+	}
 
-  // Get logs
-  public getLogs(): Observable<string[]> {
-    return this.logsSubject.asObservable();
-  }
+	// Expose logs as an observable
+	public getLogs(): Observable<string[]> {
+		return this.logsSubject.asObservable();
+	}
 
-  // Close WebSocket connections
-  public closeConnections(): void {
-    this.ticketPoolSocket.complete();
-    this.logSocket.complete();
-  }
+	// Send a message to the WebSocket server
+	public sendMessage(message: string): void {
+		this.socket.next({ message });
+	}
 
-  // Send a message to the server
-  public sendMessage(message: string): void {
-    this.ticketPoolSocket.next(message);
-  }
+	// Close the WebSocket connection
+	public closeConnection(): void {
+		this.socket.complete();
+	}
 }

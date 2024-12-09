@@ -1,15 +1,24 @@
 <mat-toolbar>
-  <span>Event Booking System</span>
+  <span routerLink="/" class="title">Event Booking System</span>
   <div class="button-container">
-    <button mat-button routerLink="/logs">Logs</button>
-    <button mat-button routerLink="/config-settings">
-      Configuration settings
+    <button mat-button routerLink="/logs">
+      <span class="nav-text">Logs</span>
     </button>
-    <button mat-button routerLink="/ticketpool">TicketPool</button>
-    <button mat-button [matMenuTriggerFor]="menu">Registration</button>
+    <button mat-button routerLink="/config-settings">
+      <span class="nav-text">Configuration Setttings</span>
+    </button>
+    <button mat-button routerLink="/ticketpool">
+      <span class="nav-text">TicketPool Status</span>
+    </button>
+    <button mat-button [matMenuTriggerFor]="menu">
+      <span class="nav-text">Registration</span>
+    </button>
     <mat-menu #menu="matMenu">
       <button mat-menu-item routerLink="/customer">Customer</button>
       <button mat-menu-item routerLink="/vendor">Vendor</button>
     </mat-menu>
+    <button mat-button routerLink="/ticket-list">
+      <span class="nav-text">Tickets</span>
+    </button>
   </div>
 </mat-toolbar>
