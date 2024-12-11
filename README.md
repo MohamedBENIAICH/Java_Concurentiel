@@ -139,6 +139,18 @@ realTimeEventTicketingUI/src/app: Angular components, services, and modules.
 |api/reset                        |   POST    |  Clear logs                               |
 
 
+## WebSocket Connection
+
+WebSocket URL: ws://localhost:9090/ws-native
+Purpose: Real time updates on TicketPool status and logs
+
+### Supported Messages
+
+| MessageType   | Direction | Description                     |
+|---------------|-----------|---------------------------------|
+| status        | Receive   | Updates on ticketpool status    |
+| logs          | Receive   | Updates log messages            |
+|               | Send      | Messages sent to backend server |
 
 
 ## Troubleshooting
