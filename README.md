@@ -21,13 +21,21 @@ Frontend: Visual Studio Code
 Make sure you have an internet connection and the following installed:
 
 Java (JDK 17 or later)
+
 Node.js (LTS version)
+
 Angular CLI
+
 bash
+
 npm install -g @angular/cli
+
 MySQL Server and MySQL Workbench
+
 Maven (comes with IntelliJ IDEA for Spring Boot projects)
+
 IntelliJ IDEA (version 2023.3.1 or later) 
+
 Visual Studio Code
 
 ## Setup Instructions
@@ -55,9 +63,9 @@ Install Dependencies
 
 Open the folder you created or extracted and select RealTimeEventTicketingSystemUI folder
 
-Open it as an VS Code project by right clicking on it or by starting up Visual Studio Code and selecting Open Folder
+Open it as a VS Code project by right clicking on it or by starting up Visual Studio Code and selecting Open Folder
 
-Open a new terminal window in VS Code and run the command npm install
+Open a new terminal window in VS Code and run the command "npm install"
 
 ### 3. Database (MySQL Workbench)
 
@@ -106,6 +114,7 @@ The backend API runs at http://localhost:9090.
 ### Backend
 
 RealTimeEventTicketingSystem/src/main/java/com/thilina_jayasinghe/w2052199/RealTimeEventTicketingSystem: Source code.
+
 RealTimeEventTicketingSystem/src/main/resources: File to configure application -> application.properties
 
 ### Frontend
@@ -114,19 +123,20 @@ realTimeEventTicketingUI/src/app: Angular components, services, and modules.
 
 ## API Endpoints
 
-  Endpoint                         Method             Description
-api/save/config                     POST      Save configuration details
-api/save/vendor                     POST      Save new vendor
-api/get/vendor                      GET       Get list of saved vendors in database
-api/delete/vendor/{vendorId}        DELETE    Delete a specific vendor from database
-api/save/customer                   POST      Save new customer
-api/get/customer                    GET       Get list of saved customers in database
-api/delete/customer/{customerId}    DELETE    Delete a specific customer from database
-api/save/ticket                     POST      Save a ticket in database
-api/get/tickets                     GET       Get list of saved tickets in database
-api/start                           POST      Start threads
-api/stop                            POST      Stop running threads
-api/reset                           POST      Clear logs
+|  Endpoint                       |  Method   |          Description                      |
+|-----------------------------------------------------------------------------------------|
+|api/save/config                  |   POST    |  Save configuration details               |
+|api/save/vendor                  |   POST    | Save new vendor                           |
+|api/get/vendor                   |   GET     |  Get list of saved vendors in database    |
+|api/delete/vendor/{vendorId}     |   DELETE  |  Delete a specific vendor from database   |
+|api/save/customer                |   POST    |  Save new customer                        |
+|api/get/customer                 |   GET     |  Get list of saved customers in database  |
+|api/delete/customer/{customerId} |   DELETE  |  Delete a specific customer from database |
+|api/save/ticket                  |   POST    |  Save a ticket in database                |
+|api/get/tickets                  |   GET     |  Get list of saved tickets in database    |
+|api/start                        |   POST    |  Start threads                            |
+|api/stop                         |   POST    |  Stop running threads                     |
+|api/reset                        |   POST    |  Clear logs                               |
 
 
 
