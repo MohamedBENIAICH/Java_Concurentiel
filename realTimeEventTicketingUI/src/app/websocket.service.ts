@@ -55,8 +55,7 @@ export class WebSocketService {
 
   // Update logs in the BehaviorSubject
   private updateLogs(newLogs: string[]): void {
-    const currentLogs = this.logsSubject.value;
-    this.logsSubject.next([...currentLogs, ...newLogs]);
+    this.logsSubject.next(newLogs);
   }
 
   // Expose ticket pool status as an observable

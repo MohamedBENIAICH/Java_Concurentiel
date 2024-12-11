@@ -33,11 +33,6 @@ export class LogDisplayComponent {
     });
   }
 
-  resetLogs(): void {
-    this.logs = [];
-    this.seenLogs.clear(); // Clear the set to allow all logs to be displayed again
-  }
-
   ngOnDestroy(): void {
     if (this.logsSubscription) {
       this.logsSubscription.unsubscribe();

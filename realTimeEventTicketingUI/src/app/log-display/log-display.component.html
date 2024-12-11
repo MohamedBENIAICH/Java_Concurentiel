@@ -1,11 +1,11 @@
 <app-control-panel></app-control-panel>
 
-<div class="reset-button">
-  <button mat-stroked-button (click)="resetLogs()">Reset</button>
-</div>
-
 <div class="log-container">
-  <ul style="list-style-type: none">
+  <ul style="list-style-type: none" *ngIf="logs.length; else noLogs">
     <li *ngFor="let log of logs">{{ log }}</li>
   </ul>
+
+  <ng-template #noLogs>
+    <p>No logs available.</p>
+  </ng-template>
 </div>

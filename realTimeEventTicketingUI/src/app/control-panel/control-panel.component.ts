@@ -50,10 +50,26 @@ export class ControlPanelComponent {
     });
   }
 
+  resetLogs(): void {
+    this.controlPanelService.resetLogs().subscribe({
+      next: (response) => {
+        this.statusMessage = response;
+        this.controlPanelService.setThreadsRunning(false);
+        this.reloadPage();
+      },
+      error: (error) => {
+        console.error('Failed to reset logs:', error);
+        this.statusMessage = 'Error resetting logs';
+      },
+    });
+  }
+
   private reloadPage(): void {
     // Refresh the current route without navigating elsewhere
     this.router.navigateByUrl('/logs', { skipLocationChange: true }).then(() => {
       this.router.navigate([this.router.url]); // Reload current route
     });
   }
+
+  
 }

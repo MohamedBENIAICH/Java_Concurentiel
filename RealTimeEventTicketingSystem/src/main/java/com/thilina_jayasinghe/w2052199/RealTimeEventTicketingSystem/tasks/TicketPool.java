@@ -161,4 +161,13 @@ public class TicketPool {
             reentrantLock.unlock();
         }
     }
+
+    public void clearLogs() {
+        try {
+            reentrantLock.lock();
+            logs.clear();
+        } finally {
+            reentrantLock.unlock();
+        }
+    }
 }

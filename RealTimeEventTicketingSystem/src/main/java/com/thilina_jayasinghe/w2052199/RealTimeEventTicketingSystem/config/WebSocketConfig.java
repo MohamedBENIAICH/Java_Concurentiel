@@ -23,12 +23,24 @@ public class WebSocketConfig implements WebSocketConfigurer, ApplicationListener
         this.appWebSocketHandler = appWebSocketHandler;
     }
 
+    /**
+     * Registers WebSocket endpoints with the application by configuring a WebSocket endpoint
+     * for the application by registering it with a web socket handler.
+     * appWebSocketHandler is responsible for managing connections and messaging.
+     * @param registry WebSocketHandlerRegistry object used to register WebSocket handlers
+     */
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         // Register the WebSocket endpoint with a placeholder handler initially
-        registry.addHandler(appWebSocketHandler, "/ws-native").setAllowedOrigins("*");
+        registry.addHandler(appWebSocketHandler, "/ws-native").setAllowedOrigins("http://localhost:4200");
     }
 
+    /**
+     * Handles the initialization of the WebSocket handler on the event of ticket pool initialization.
+     * This method listens for `TicketPoolInitializedEvent` and upon receiving this event,
+     * it sets the newly created ticketPool object to the web socket handler
+     * @param event an object representing the event triggered when the ticket pool is initialized.
+     */
     @Override
     public void onApplicationEvent(@NonNull TicketPoolInitializedEvent event) {
         if (!isInitialized) {

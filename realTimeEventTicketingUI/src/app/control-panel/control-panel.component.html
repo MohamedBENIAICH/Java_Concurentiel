@@ -8,6 +8,7 @@
   >
     <mat-icon>play_circle</mat-icon>Start
   </button>
+
   <button
     mat-fab
     extended
@@ -17,5 +18,9 @@
   >
     <mat-icon>stop_circle</mat-icon>
     Stop
+  </button>
+
+  <button mat-fab extended (click)="resetLogs()">
+    Reset<mat-icon>clear_all</mat-icon>
   </button>
 </div>

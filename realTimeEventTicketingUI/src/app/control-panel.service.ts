@@ -43,4 +43,14 @@ export class ControlPanelService {
     });
   }
 
+  /**
+ * Sends a request to reset logs.
+ * @returns Observable<string> containing the server's response message.
+ */
+public resetLogs(): Observable<string> {
+  return this.httpClient.post<string>(`${this.api}/reset`, null, {
+    responseType: 'text' as 'json',
+  });
+}
+
 }

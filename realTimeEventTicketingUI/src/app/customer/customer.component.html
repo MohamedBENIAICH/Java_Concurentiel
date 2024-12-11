@@ -97,7 +97,9 @@
         <span *ngIf="quantity.errors?.['required']"
           >This field is required.</span
         >
-        <span *ngIf="quantity.errors?.['pattern']">Enter a valid number.</span>
+        <span *ngIf="quantity.errors?.['pattern']"
+          >Enter a valid number between 1 and 10.</span
+        >
       </mat-error>
     </mat-form-field>
 

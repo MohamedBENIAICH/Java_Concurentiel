@@ -25,6 +25,11 @@ public class ConfigurationService {
     @Autowired
     private VendorRepository vendorRepository;
 
+    /**
+     * Saves new configuration in database after resetting all the existing tables
+     * @param configuration object to be saved in the database
+     * @return save configuration object
+     */
     @Transactional
     public Configuration saveConfiguration(Configuration configuration) {
         ticketRepository.deleteAll();
@@ -39,14 +44,4 @@ public class ConfigurationService {
                 .orElseThrow(() -> new IllegalStateException("Configuration with ID 1 not found"));
     }
 
-    @Transactional
-    public Configuration updateConfiguration(Configuration configuration) {
-        configurationRepository.findById(1).orElseThrow();
-
-        ticketRepository.deleteAll();
-        customerRepository.deleteAll();
-        vendorRepository.deleteAll();
-
-        return configurationRepository.save(configuration);
-    }
 }

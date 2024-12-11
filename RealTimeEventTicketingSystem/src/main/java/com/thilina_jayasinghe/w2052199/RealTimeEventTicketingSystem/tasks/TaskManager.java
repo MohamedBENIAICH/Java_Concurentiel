@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Component
 public class TaskManager {
@@ -41,10 +42,15 @@ public class TaskManager {
     private ExecutorService executorService;
     private Map<Integer, Future<?>> vendorTasks = new ConcurrentHashMap<>();
     private Map<Integer, Future<?>> customerTasks = new ConcurrentHashMap<>();
+    ReentrantLock reentrantLock = new ReentrantLock();
     private boolean isRunning = false;
 
-    public synchronized void initializeTicketPool() {
+    /**
+     * Creates a TicketPool instance and publishes an event denoting the initialization
+     */
+    public void initializeTicketPool() {
         try {
+            reentrantLock.lock();
             // Fetch configuration from the ConfigurationService
             configuration = configurationRepository.findById(1).orElseThrow();
 
@@ -55,52 +61,77 @@ public class TaskManager {
             System.out.println("TicketPool initialized successfully with configuration: " + configuration);
         } catch (IllegalStateException e) {
             System.out.println("Failed to initialize TicketPool: " + e.getMessage());
+        } finally {
+            reentrantLock.unlock();
         }
     }
 
-    public synchronized void startThreads() {
-        if (isRunning) {
-            System.out.println("Threads are already running.");
+    /**
+     * Initializes and starts concurrent tasks for vendors and customers
+     * using a cached thread pool. It retrieves all vendors and
+     * customers from their repositories, creates tasks for each entity, and submits them
+     * for execution.
+     * Thread safety is ensured using a ReentrantLock
+     */
+    public void startThreads() {
+        try {
+            reentrantLock.lock();
+            if (isRunning) {
+                System.out.println("Threads are already running.");
+            }
+
+            executorService = Executors.newCachedThreadPool();
+            List<Vendor> vendors = (List<Vendor>) vendorRepository.findAll();
+            List<Customer> customers = (List<Customer>) customerRepository.findAll();
+
+            for (Vendor vendor : vendors) {
+                VendorTask vendorTask = new VendorTask(vendor, ticketPool, configuration.getTicketReleaseRate());
+                Future<?> future = executorService.submit(vendorTask);
+                vendorTasks.put(vendor.getVendorId(), future);
+            }
+
+            for (Customer customer : customers) {
+                CustomerTask customerTask = new CustomerTask(customer, ticketPool, configuration.getCustomerRetrievalRate(), ticketService);
+                Future<?> future = executorService.submit(customerTask);
+                customerTasks.put(customer.getCustomerId(), future);
+            }
+
+            isRunning = true;
+        } finally {
+            reentrantLock.unlock();
         }
-
-        executorService = Executors.newCachedThreadPool();
-        List<Vendor> vendors = (List<Vendor>) vendorRepository.findAll();
-        List<Customer> customers = (List<Customer>) customerRepository.findAll();
-
-        for (Vendor vendor : vendors) {
-            VendorTask vendorTask = new VendorTask(vendor, ticketPool, configuration.getTicketReleaseRate());
-            Future<?> future = executorService.submit(vendorTask);
-            vendorTasks.put(vendor.getVendorId(), future);
-        }
-
-        for (Customer customer : customers) {
-            CustomerTask customerTask = new CustomerTask(customer, ticketPool, configuration.getCustomerRetrievalRate(), ticketService);
-            Future<?> future = executorService.submit(customerTask);
-            customerTasks.put(customer.getCustomerId(), future);
-        }
-
-        isRunning = true;
     }
 
-    public synchronized void stopThreads() {
-        if (!isRunning) {
-            System.out.println("Threads are not running.");
-        }
+    /**
+     * Stops all currently running vendor and customer tasks and shuts down the thread pool
+     * by cancelling tasks for vendors and customers, clearing the associated task maps, and
+     * shutting down the thread pool.
+     * Thread safety is regulated using a ReentrantLock.
+     */
+    public void stopThreads() {
+        try {
+            reentrantLock.lock();
+            if (!isRunning) {
+                System.out.println("Threads are not running.");
+            }
 
-        for (Future<?> future : vendorTasks.values()) {
-            future.cancel(true);
-        }
-        for (Future<?> future : customerTasks.values()) {
-            future.cancel(true);
-        }
+            for (Future<?> future : vendorTasks.values()) {
+                future.cancel(true);
+            }
+            for (Future<?> future : customerTasks.values()) {
+                future.cancel(true);
+            }
 
-        executorService.shutdownNow();
-        isRunning = false;
-        vendorTasks.clear();
-        customerTasks.clear();
+            executorService.shutdownNow();
+            isRunning = false;
+            vendorTasks.clear();
+            customerTasks.clear();
+        } finally {
+            reentrantLock.unlock();
+        }
     }
 
-    public boolean isRunning() {
+    public boolean getIsRunning() {
         return isRunning;
     }
 

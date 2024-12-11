@@ -23,6 +23,12 @@ public class CustomerTask implements Runnable {
         this.ticketService = ticketService;
     }
 
+
+    /**
+     * This method repeatedly retrieves tickets from `ticketPool` for a specific customer, then
+     * saves the ticket to the database through `ticketService` after a successful retrieval.
+     * The loop terminates when the ticket pool is empty or when customer's purchaseQuantity is reached.
+     */
     @Override
     public void run() {
         try {
@@ -40,6 +46,10 @@ public class CustomerTask implements Runnable {
         }
     }
 
+    /**
+     * Generates a unique timestamp to be recorded at ticket purchase
+     * @return a LocalDateTime object containing the current timestamp
+     */
     public LocalDateTime getUniqueTimestamp() {
         try {
             reentrantLock.lock();

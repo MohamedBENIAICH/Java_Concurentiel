@@ -16,6 +16,11 @@ public class ConfigurationController {
     @Autowired
     private TaskManager taskManager;
 
+    /**
+     * RESTful endpoint that saves a new configuration and calls method to initialize a TicketPool instance.
+     * @param configuration object that contains configuration details
+     * @return saved configuration object
+     */
     @PostMapping("/save/config")
     public Configuration saveConfiguration(@RequestBody Configuration configuration) {
         Configuration savedConfiguration = configurationService.saveConfiguration(configuration);
@@ -26,13 +31,6 @@ public class ConfigurationController {
     @GetMapping("/get/config")
     public Configuration getConfiguration() {
         return configurationService.getConfiguration();
-    }
-
-    @PutMapping("/update/config")
-    public Configuration updateConfiguration(@RequestBody Configuration configuration) {
-        Configuration updatedConfiguration = configurationService.updateConfiguration(configuration);
-        taskManager.initializeTicketPool();
-        return updatedConfiguration;
     }
 
 }

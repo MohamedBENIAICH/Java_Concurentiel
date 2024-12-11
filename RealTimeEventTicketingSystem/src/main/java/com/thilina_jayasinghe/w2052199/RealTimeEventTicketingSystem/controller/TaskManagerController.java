@@ -26,4 +26,10 @@ public class TaskManagerController {
         return ResponseEntity.ok("Threads stopped.");
     }
 
+    @PostMapping("/reset")
+    public ResponseEntity<String> resetLogs() {
+        taskManager.getTicketPool().clearLogs();
+        return ResponseEntity.ok("Logs reset.");
+    }
+
 }
