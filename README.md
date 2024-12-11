@@ -124,7 +124,7 @@ realTimeEventTicketingUI/src/app: Angular components, services, and modules.
 ## API Endpoints
 
 |  Endpoint                       |  Method   |          Description                      |
-|-----------------------------------------------------------------------------------------|
+|---------------------------------|-----------|-------------------------------------------|
 |api/save/config                  |   POST    |  Save configuration details               |
 |api/save/vendor                  |   POST    | Save new vendor                           |
 |api/get/vendor                   |   GET     |  Get list of saved vendors in database    |
