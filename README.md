@@ -81,6 +81,14 @@ Go to IntelliJ IDEA and update the values for "spring.datasource.url" with "jdbc
 
 ## Start up the system
 
+### 1. CLI
+
+Go to the java class file in the path RealTimeEventTicketingSystem/src/main/java/com/thilina_jayasinghe/w2052199/RealTimeEventTicketingSystem/cli/EventTicketingSystem.java in IntelliJ IDEA
+
+Run the class
+
+### 2. Web App
+
 Start the backend (Spring Boot) by going to the class RealTimeEventTicketingSystem/src/main/java/com/thilina_jayasinghe/w2052199/RealTimeEventTicketingSystem/RealTimeEventTicketingSystemApplication.java
 
 Run the application for the first time and check if the tables are created for configuration, vendors, customers and tickets in MySQL Workbench
