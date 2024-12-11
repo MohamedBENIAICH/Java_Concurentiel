@@ -34,7 +34,6 @@ public class TicketPool {
         this.totalTickets = totalTickets;
         this.maxTicketCapacity = maxTicketCapacity;
         this.unsoldTickets = new AtomicInteger(totalTickets);
-        logMessages("TicketPool initialized with totalTickets: " + totalTickets + " and maxTicketCapacity: " + maxTicketCapacity, "INFO");
     }
 
     protected void addTickets(Ticket ticket) {
@@ -49,6 +48,7 @@ public class TicketPool {
                 return;
             }
             ticketCount.incrementAndGet();
+            ticket.setTicketNo(ticketCount.get());
             ticketList.add(ticket);
             logMessages(ticket.getVendor() + " released ticket number " + ticketCount, "INFO");
             condition.signalAll();

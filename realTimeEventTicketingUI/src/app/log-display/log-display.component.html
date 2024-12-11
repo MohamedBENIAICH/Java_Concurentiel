@@ -1,11 +1,11 @@
+<app-control-panel></app-control-panel>
+
+<div class="reset-button">
+  <button mat-stroked-button (click)="resetLogs()">Reset</button>
+</div>
+
 <div class="log-container">
-  <h6>Real-Time Logs</h6>
-  <!-- <div *ngFor="let log of logs" class="log-entry">
-    {{ log }}
-  </div> -->
-  <ul>
+  <ul style="list-style-type: none">
     <li *ngFor="let log of logs">{{ log }}</li>
   </ul>
 </div>
-
-<app-control-panel></app-control-panel>

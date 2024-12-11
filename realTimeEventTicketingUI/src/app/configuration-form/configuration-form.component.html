@@ -1,32 +1,26 @@
 <div class="container">
   <span class="topic">Configure Settings</span>
-  <form
-    #configurationForm="ngForm"
-    (ngSubmit)="saveConfiguration(configurationForm)"
-  >
+
+  <form [formGroup]="form" (ngSubmit)="saveConfiguration()">
     <!-- Total Tickets -->
     <mat-form-field appearance="outline">
       <mat-label>Total Tickets</mat-label>
       <input
         matInput
         placeholder="Total Tickets"
-        name="Total Tickets"
-        [(ngModel)]="configuration.totalTickets"
-        #totalTickets="ngModel"
-        required
-        pattern="^[2-9][0-9]+$"
-        (ngModelChange)="validateTotalTickets()"
+        formControlName="totalTickets"
+        type="number"
       />
       <mat-icon matSuffix>functions</mat-icon>
-      <mat-error *ngIf="totalTickets.invalid && totalTickets.touched">
-        <span *ngIf="totalTickets.errors?.['required']"
-          >Total tickets are required.</span
-        >
-        <span *ngIf="totalTickets.errors?.['pattern']"
-          >Total tickets must be a number.</span
-        >
-        <span *ngIf="validationErrors.totalTickets">
-          {{ validationErrors.totalTickets }}
+      <mat-error *ngIf="form.get('totalTickets')?.errors">
+        <span *ngIf="form.get('totalTickets')?.hasError('required')">
+          Total tickets are required.
+        </span>
+        <span *ngIf="form.get('totalTickets')?.hasError('min')">
+          Total tickets must be at least 20.
+        </span>
+        <span *ngIf="form.get('totalTickets')?.hasError('max')">
+          Total tickets must be less than 1000.
         </span>
       </mat-error>
     </mat-form-field>
@@ -37,21 +31,24 @@
       <input
         matInput
         placeholder="Vendor Ticket Release Interval"
-        name="Vendor Ticket Release Rate"
-        [(ngModel)]="configuration.ticketReleaseRate"
-        #ticketReleaseRate="ngModel"
-        required
-        pattern="^[1-9]{1}"
-        (ngModelChange)="validateIntervals()"
+        formControlName="ticketReleaseRate"
+        type="number"
       />
       <mat-icon matSuffix>speed</mat-icon>
-      <mat-error *ngIf="ticketReleaseRate.invalid && ticketReleaseRate.touched">
-        <span *ngIf="ticketReleaseRate.errors?.['required']"
-          >This field is required.</span
+      <mat-error *ngIf="form.get('ticketReleaseRate')?.errors">
+        <span *ngIf="form.get('ticketReleaseRate')?.hasError('required')">
+          This field is required.
+        </span>
+        <span
+          *ngIf="form.get('ticketReleaseRate')?.hasError('intervalInvalid')"
         >
-        <span *ngIf="ticketReleaseRate.errors?.['pattern']"
-          >Must be a number.</span
+          {{ form.get('ticketReleaseRate')?.errors?.['message'] }}
+        </span>
+        <span
+          *ngIf="form.get('ticketReleaseRate')?.hasError('intervalMismatch')"
         >
+          {{ form.get('ticketReleaseRate')?.errors?.['message'] }}
+        </span>
       </mat-error>
     </mat-form-field>
 
@@ -61,67 +58,46 @@
       <input
         matInput
         placeholder="Customer Ticket Retrieval Interval"
-        name="Customer Ticket Retrieval Rate"
-        [(ngModel)]="configuration.customerRetrievalRate"
-        #customerRetrievalRate="ngModel"
-        required
-        pattern="^[1-9]{1}"
-        (ngModelChange)="validateIntervals()"
+        formControlName="customerRetrievalRate"
+        type="number"
       />
       <mat-icon matSuffix>speed</mat-icon>
-      <mat-error
-        *ngIf="customerRetrievalRate.invalid && customerRetrievalRate.touched"
-      >
-        <span *ngIf="customerRetrievalRate.errors?.['required']"
-          >This field is required.</span
-        >
-        <span *ngIf="customerRetrievalRate.errors?.['pattern']"
-          >Must be a number.</span
-        >
-        <span *ngIf="validationErrors.intervals">
-          {{ validationErrors.intervals }}
+      <mat-error *ngIf="form.get('customerRetrievalRate')?.errors">
+        <span *ngIf="form.get('customerRetrievalRate')?.hasError('required')">
+          This field is required.
         </span>
       </mat-error>
     </mat-form-field>
 
-    <!-- Maximum Ticket Capacity of Buffer -->
+    <!-- Maximum Ticket Capacity -->
     <mat-form-field appearance="outline">
       <mat-label>Maximum Ticket Capacity</mat-label>
       <input
         matInput
-        placeholder="Maximum Ticket Capacity of Buffer"
-        name="Maximum Ticket Capacity"
-        [(ngModel)]="configuration.maxTicketCapacity"
-        #maxTicketCapacity="ngModel"
-        required
-        pattern="^[1-9][0-9]+$"
-        (ngModelChange)="validateMaxCapacity()"
+        placeholder="Maximum Ticket Capacity"
+        formControlName="maxTicketCapacity"
+        type="number"
       />
       <mat-icon matSuffix>water_full</mat-icon>
-      <mat-error *ngIf="maxTicketCapacity.invalid && maxTicketCapacity.touched">
-        <span *ngIf="maxTicketCapacity.errors?.['required']"
-          >This field is required.</span
+      <mat-error *ngIf="form.get('maxTicketCapacity')?.errors">
+        <span *ngIf="form.get('maxTicketCapacity')?.hasError('required')">
+          This field is required.
+        </span>
+        <span
+          *ngIf="form.get('maxTicketCapacity')?.hasError('maxCapacityInvalid')"
         >
-        <span *ngIf="maxTicketCapacity.errors?.['pattern']"
-          >Must be a number.</span
-        >
-        <span *ngIf="validationErrors.maxCapacity">
-          {{ validationErrors.maxCapacity }}
+          {{ form.get('maxTicketCapacity')?.errors?.['message'] }}
         </span>
       </mat-error>
     </mat-form-field>
 
-    <mat-divider></mat-divider>
-
     <div class="button-section">
-      <button mat-stroked-button type="button" (click)="clearForm()">
+      <button mat-stroked-button type="reset" (click)="form.reset()">
         Clear
       </button>
-      <button
-        mat-flat-button
-        type="submit"
-        [disabled]="configurationForm.invalid"
-      >
+
+      <!-- Submit Button -->
+      <button mat-flat-button type="submit" [disabled]="form.invalid">
         Save
       </button>
     </div>

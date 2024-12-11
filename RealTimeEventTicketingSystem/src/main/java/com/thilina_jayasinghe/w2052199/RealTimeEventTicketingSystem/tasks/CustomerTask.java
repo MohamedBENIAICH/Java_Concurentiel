@@ -5,6 +5,7 @@ import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.model.Ticket
 import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.service.TicketService;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class CustomerTask implements Runnable {
     private Customer customer;
@@ -12,6 +13,7 @@ public class CustomerTask implements Runnable {
     private int purchaseQuantity;
     private double retrievalInterval;
     private TicketService ticketService;
+    ReentrantLock reentrantLock = new ReentrantLock();
 
     public CustomerTask(Customer customer, TicketPool ticketPool, double retrievalInterval, TicketService ticketService) {
         this.customer = customer;
@@ -25,7 +27,7 @@ public class CustomerTask implements Runnable {
     public void run() {
         try {
             while ((ticketPool.getUnsoldTickets().get() != 0) && (purchaseQuantity>0)) {
-                Ticket ticket = ticketPool.removeTicket(customer.getCustomerName(), LocalDateTime.now());
+                Ticket ticket = ticketPool.removeTicket(customer.getCustomerName(), getUniqueTimestamp());
                 purchaseQuantity--;
                 if (ticket == null) {
                     break;
@@ -35,6 +37,15 @@ public class CustomerTask implements Runnable {
             }
         } catch (InterruptedException e) {
             System.out.println(e.getMessage());
+        }
+    }
+
+    public LocalDateTime getUniqueTimestamp() {
+        try {
+            reentrantLock.lock();
+            return LocalDateTime.now();
+        } finally {
+            reentrantLock.unlock();
         }
     }
 }

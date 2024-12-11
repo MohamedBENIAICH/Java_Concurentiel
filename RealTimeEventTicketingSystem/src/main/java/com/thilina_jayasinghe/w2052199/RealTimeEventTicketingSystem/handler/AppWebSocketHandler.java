@@ -10,6 +10,8 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Component
@@ -18,12 +20,9 @@ public class AppWebSocketHandler extends TextWebSocketHandler {
     private final AtomicReference<WebSocketSession> currentSession = new AtomicReference<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public AppWebSocketHandler() {
-        // Default constructor
-    }
-
     public void setTicketPool(TicketPool ticketPool) {
         this.ticketPool = ticketPool;
+        System.out.println("TicketPool set in WebSocketHandler.");
     }
 
     @Override
@@ -64,7 +63,7 @@ public class AppWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    @Scheduled(fixedRate = 1000) // Update every second
+    @Scheduled(fixedRate = 1000)
     public void broadcastTicketPoolStatus() {
         WebSocketSession session = currentSession.get();
         if (session != null && session.isOpen()) {
@@ -76,7 +75,7 @@ public class AppWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    @Scheduled(fixedRate = 1000) // Update logs every second
+    @Scheduled(fixedRate = 1000)
     public void broadcastLogs() {
         WebSocketSession session = currentSession.get();
         if (session != null && session.isOpen()) {
@@ -89,24 +88,32 @@ public class AppWebSocketHandler extends TextWebSocketHandler {
     }
 
     private void sendTicketPoolStatus(WebSocketSession session) throws Exception {
-        Object statusObj = ticketPool.getStatus();
-        if (statusObj instanceof java.util.Map) {
-            @SuppressWarnings("unchecked")
-            java.util.Map<String, Object> status = (java.util.Map<String, Object>) statusObj;
-            String statusMessage = objectMapper.writeValueAsString(java.util.Map.of("type", "status", "data", status));
-            session.sendMessage(new TextMessage(statusMessage));
+        if (ticketPool != null) {
+            Object statusObj = ticketPool.getStatus();
+            if (statusObj instanceof Map) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> status = (Map<String, Object>) statusObj;
+                String statusMessage = objectMapper.writeValueAsString(Map.of("type", "status", "data", status));
+                session.sendMessage(new TextMessage(statusMessage));
+            } else {
+                System.out.println("Invalid ticket pool status format.");
+            }
         } else {
-            System.out.println("Invalid ticket pool status format.");
+            System.out.println("TicketPool is not initialized yet.");
         }
     }
 
     private void sendLogs(WebSocketSession session) throws Exception {
-        java.util.List<String> logs = ticketPool.getLogs(); // Assuming TicketPool has a `getLogs` method
-        if (logs != null) {
-            String logsMessage = objectMapper.writeValueAsString(java.util.Map.of("type", "log", "data", logs));
-            session.sendMessage(new TextMessage(logsMessage));
+        if (ticketPool != null) {
+            List<String> logs = ticketPool.getLogs();
+            if (logs != null) {
+                String logsMessage = objectMapper.writeValueAsString(Map.of("type", "log", "data", logs));
+                session.sendMessage(new TextMessage(logsMessage));
+            } else {
+                System.out.println("No logs available to send.");
+            }
         } else {
-            System.out.println("No logs available to send.");
+            System.out.println("TicketPool is not initialized yet.");
         }
     }
 

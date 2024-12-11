@@ -7,6 +7,18 @@ import { Observable } from 'rxjs';
 })
 export class ControlPanelService {
 
+  private threadsRunning: boolean = false;
+
+  // Method to set threadsRunning
+  setThreadsRunning(running: boolean): void {
+    this.threadsRunning = running;
+  }
+
+  // Method to get threadsRunning
+  isThreadsRunning(): boolean {
+    return this.threadsRunning;
+  }
+
   constructor(private httpClient: HttpClient) { }
 
   api = "http://localhost:9090"

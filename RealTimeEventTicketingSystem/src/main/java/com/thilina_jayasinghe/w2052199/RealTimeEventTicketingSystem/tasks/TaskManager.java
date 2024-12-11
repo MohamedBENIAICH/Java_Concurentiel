@@ -60,7 +60,7 @@ public class TaskManager {
 
     public synchronized void startThreads() {
         if (isRunning) {
-            throw new IllegalStateException("Threads are already running.");
+            System.out.println("Threads are already running.");
         }
 
         executorService = Executors.newCachedThreadPool();
@@ -84,7 +84,7 @@ public class TaskManager {
 
     public synchronized void stopThreads() {
         if (!isRunning) {
-            throw new IllegalStateException("Threads are not running.");
+            System.out.println("Threads are not running.");
         }
 
         for (Future<?> future : vendorTasks.values()) {
@@ -104,13 +104,6 @@ public class TaskManager {
         return isRunning;
     }
 
-    public int getRunningVendorThreads() {
-        return (int) vendorTasks.values().stream().filter(future -> !future.isCancelled()).count();
-    }
-
-    public int getRunningCustomerThreads() {
-        return (int) customerTasks.values().stream().filter(future -> !future.isCancelled()).count();
-    }
 
     public TicketPool getTicketPool() {
         return ticketPool;

@@ -1,5 +1,11 @@
 <div class="control-panel">
-  <button mat-fab extended (click)="startThreads()" class="start-button">
+  <button
+    mat-fab
+    extended
+    (click)="startThreads()"
+    [disabled]="threadsRunning"
+    class="start-button"
+  >
     <mat-icon>play_circle</mat-icon>Start
   </button>
   <button

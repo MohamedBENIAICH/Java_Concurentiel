@@ -20,5 +20,8 @@ export class VendorService {
     return this.httpClient.get<Vendor[]>(`${this.api}/get/vendor`);
   }
 
+  public deleteVendor(vendorId: number) {
+    return this.httpClient.delete(`${this.api}/delete/vendor/${vendorId}`);
+  }
 
 }

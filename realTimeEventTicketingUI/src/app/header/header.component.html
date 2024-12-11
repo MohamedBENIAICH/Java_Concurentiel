@@ -10,15 +10,22 @@
     <button mat-button routerLink="/ticketpool">
       <span class="nav-text">TicketPool Status</span>
     </button>
-    <button mat-button [matMenuTriggerFor]="menu">
+    <button mat-button [matMenuTriggerFor]="registerMenu">
       <span class="nav-text">Registration</span>
     </button>
-    <mat-menu #menu="matMenu">
+    <mat-menu #registerMenu="matMenu">
       <button mat-menu-item routerLink="/customer">Customer</button>
       <button mat-menu-item routerLink="/vendor">Vendor</button>
     </mat-menu>
     <button mat-button routerLink="/ticket-list">
       <span class="nav-text">Tickets</span>
     </button>
+    <button mat-button [matMenuTriggerFor]="usersMenu">
+      <span class="nav-text">Users</span>
+    </button>
+    <mat-menu #usersMenu="matMenu">
+      <button mat-menu-item routerLink="/customer-list">Customers</button>
+      <button mat-menu-item routerLink="/vendor-list">Vendors</button>
+    </mat-menu>
   </div>
 </mat-toolbar>

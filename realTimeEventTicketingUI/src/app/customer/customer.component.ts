@@ -33,10 +33,6 @@ export class CustomerComponent {
 		customerTel: 9412345678,
 		purchaseQuantity: 0
 	};
-	
-	clickFunc() {
-	console.log("This button works!");
-	}
 
 	constructor(private customerService: CustomerService, private router: Router, private activatedRoute: ActivatedRoute) {}
 

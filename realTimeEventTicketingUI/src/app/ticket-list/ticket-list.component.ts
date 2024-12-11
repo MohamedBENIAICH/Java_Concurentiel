@@ -17,7 +17,7 @@ import { Ticket } from './ticket-list.module';
 export class TicketListComponent implements OnInit {
   dataSource: Ticket[] = [];
 
-	displayedColumns: string[] = ['ticketNo', 'vendor', 'eventName', 'location', 'customer', 'ticketPrice', 'timestamp'];
+	displayedColumns: string[] = ['transactionId', 'ticketNo', 'vendor', 'eventName', 'location', 'customer', 'ticketPrice', 'timestamp'];
 
 	constructor(private ticketService: TicketService, private router: Router) {
 		this.getTicketList();

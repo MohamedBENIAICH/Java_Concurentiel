@@ -89,4 +89,15 @@ public class Ticket {
     public void setLocation(String location) {
         this.location = location;
     }
+
+    @Override
+    public String toString() {
+        return "Ticket No." + ticketNo +
+                " released by " + vendor +
+                " for " + eventName +
+                " event at " + location +
+                " was purchased by " + customer + '\'' +
+                " for $" + ticketPrice +
+                " on " + timestamp;
+    }
 }

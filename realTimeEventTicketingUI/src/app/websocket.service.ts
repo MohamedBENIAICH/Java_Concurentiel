@@ -6,64 +6,89 @@ import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
   providedIn: 'root',
 })
 export class WebSocketService {
-	private socket: WebSocketSubject<any>;
-	private statusSubject = new BehaviorSubject<any>(null); // Real-time ticket pool status
-	private logsSubject = new BehaviorSubject<string[]>([]); // Log messages
+	private socket: WebSocketSubject<any> | null = null;
+  private statusSubject = new BehaviorSubject<any>(null); // Real-time ticket pool status
+  private logsSubject = new BehaviorSubject<string[]>([]); // Log messages
 
-	constructor() {
-		// Initialize WebSocket connection to match backend endpoint
-		this.socket = webSocket('ws://localhost:9090/ws-native');
+  constructor() {
+    this.connectWebSocket();
+  }
 
-		// Listen to server messages
-		this.listenToServerMessages();
-	}
+  // Method to initialize the WebSocket connection
+  private connectWebSocket(): void {
+    try {
+      this.socket = webSocket('ws://localhost:9090/ws-native');
+      this.listenToServerMessages(); // Start listening to server messages
+    } catch (error) {
+      console.log("Couldn't connect to WebSocket", error);
+    }
+  }
 
-	// Subscribe to WebSocket messages
-	private listenToServerMessages(): void {
-		this.socket.subscribe({
-		next: (message) => this.handleServerMessage(message),
-		error: (err) => console.error('WebSocket error:', err),
-		complete: () => console.warn('WebSocket connection closed'),
-		});
-	}
+  // Listen to messages from the WebSocket server
+  private listenToServerMessages(): void {
+    this.socket?.subscribe({
+      next: (message) => this.handleServerMessage(message),
+      error: (err) => {
+        console.log('WebSocket error:', err);
+        this.reconnectWebSocket(); // Attempt reconnection on error
+      },
+      complete: () => {
+        console.log('WebSocket connection closed');
+        this.reconnectWebSocket(); // Attempt reconnection when closed
+      },
+    });
+  }
 
-	// Process incoming server messages
-	private handleServerMessage(message: any): void {
-		switch (message.type) {
-		case 'status':
-			this.statusSubject.next(message.data); // Update status
-			break;
-		case 'log':
-			this.addLog(message.data); // Add to logs
-			break;
-		default:
-			console.warn('Unknown message type:', message.type);
-		}
-	}
+  // Handle incoming messages from the server
+  private handleServerMessage(message: any): void {
+    switch (message.type) {
+      case 'status':
+        this.statusSubject.next(message.data); // Update ticket pool status
+        break;
+      case 'log':
+        this.updateLogs(message.data); // Update logs
+        break;
+      default:
+        console.log('Unknown message type:', message.type);
+    }
+  }
 
-	// Add a log to the logsSubject
-	private addLog(log: string): void {
-		const currentLogs = this.logsSubject.value;
-		this.logsSubject.next([...currentLogs, log]);
-	}
+  // Update logs in the BehaviorSubject
+  private updateLogs(newLogs: string[]): void {
+    const currentLogs = this.logsSubject.value;
+    this.logsSubject.next([...currentLogs, ...newLogs]);
+  }
 
-	// Expose ticket pool status as an observable
-	public getTicketPoolStatus(): Observable<any> {
-		return this.statusSubject.asObservable();
-	}
+  // Expose ticket pool status as an observable
+  public getTicketPoolStatus(): Observable<any> {
+    return this.statusSubject.asObservable();
+  }
 
-	// Expose logs as an observable
-	public getLogs(): Observable<string[]> {
-		return this.logsSubject.asObservable();
-	}
+  // Expose logs as an observable
+  public getLogs(): Observable<string[]> {
+    return this.logsSubject.asObservable();
+  }
 
-	// Send a message to the WebSocket server
-	public sendMessage(message: string): void {
-		this.socket.next({ message });
-	}
+  // Send a message to the WebSocket server
+  public sendMessage(messageType: string): void {
+    if (this.socket) {
+      this.socket.next({ type: messageType });
+    } else {
+      console.log('WebSocket is not connected. Message not sent:', messageType);
+    }
+  }
 
-	// Close the WebSocket connection
-	public closeConnection(): void {
-		this.socket.complete();
-	}
+  // Close the WebSocket connection
+  public closeConnection(): void {
+    if (this.socket) {
+      this.socket.complete();
+      this.socket = null;
+    }
+  }
+
+  // Reconnect WebSocket after a failure
+  private reconnectWebSocket(): void {
+    console.log('Attempting to reconnect to WebSocket...');
+    setTimeout(() => this.connectWebSocket(), 5000); // Retry connection after 5 seconds
+  }
 }

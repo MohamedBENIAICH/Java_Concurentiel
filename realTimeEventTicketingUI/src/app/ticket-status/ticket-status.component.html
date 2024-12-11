@@ -1,18 +1,14 @@
 <div class="status-container">
-  <h6>Ticket Pool Status</h6>
-  <div *ngIf="ticketPoolStatus">
+  <!-- <h6>Ticket Pool Status</h6> -->
+  <div *ngIf="ticketPoolStatus; else loading">
     <p><strong>Total Tickets:</strong> {{ ticketPoolStatus.totalTickets }}</p>
-    <p><strong>Tickets Sold:</strong> {{ ticketPoolStatus.ticketsSold }}</p>
+    <p><strong>Unsold Tickets:</strong> {{ ticketPoolStatus.unsoldTickets }}</p>
+    <p><strong>Queue Size:</strong> {{ ticketPoolStatus.currentQueueSize }}</p>
     <p>
-      <strong>Tickets Remaining:</strong>
-      {{ ticketPoolStatus.ticketsRemaining }}
-    </p>
-    <p><strong>Vendors Active:</strong> {{ ticketPoolStatus.activeVendors }}</p>
-    <p>
-      <strong>Customers Active:</strong> {{ ticketPoolStatus.activeCustomers }}
+      <strong>Max Capacity:</strong> {{ ticketPoolStatus.maxTicketCapacity }}
     </p>
   </div>
-  <div *ngIf="!ticketPoolStatus">
+  <ng-template #loading>
     <p>Loading ticket pool status...</p>
-  </div>
+  </ng-template>
 </div>

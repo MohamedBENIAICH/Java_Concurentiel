@@ -19,4 +19,8 @@ export class CustomerService {
   public getCustomers(): Observable<Customer[]> {
     return this.httpClient.get<Customer[]>(`${this.api}/get/customer`);
   }
+
+  public deleteCustomer(customerId: number) {
+    return this.httpClient.delete(`${this.api}/delete/customer/${customerId}`);
+  }
 }

@@ -13,16 +13,11 @@ export class ConfigurationService {
 	api = "http://localhost:9090"
 
 	  public saveConfiguration(configuration: Configuration): Observable<Configuration> {
-		  return this.httpClient.post<Configuration>(`${this.api}/save/configuration`, configuration);
+		  return this.httpClient.post<Configuration>(`${this.api}/save/config`, configuration);
 	  }
 
     public getConfiguration() {
-      return this.httpClient.get<Configuration>(`${this.api}/get/configuration`);
+      return this.httpClient.get<Configuration>(`${this.api}/get/config`);
     }
-
-    public updateConfiguration(configuration: Configuration) {
-      return this.httpClient.put<Configuration>(`${this.api}/update/config`, configuration);
-    }
-
 
 }

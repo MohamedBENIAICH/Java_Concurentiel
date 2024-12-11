@@ -1,7 +1,10 @@
 .log-container {
+    color: #3f001b;
+}
+
+.reset-button, .log-container {
     display: flex;
     justify-content: center;  /* Center horizontally */
     align-items: center;      /* Center vertically */
-    margin-top: 50px;                /* Remove default margin */
-    color: #3f001b;
+    margin-top: 50px; 
 }

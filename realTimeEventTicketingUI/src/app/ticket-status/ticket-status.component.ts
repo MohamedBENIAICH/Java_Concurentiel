@@ -11,27 +11,28 @@ import { Subscription } from 'rxjs';
   styleUrl: './ticket-status.component.css'
 })
 export class TicketStatusComponent {
-  ticketPoolStatus: any = null; // Initialize to null
-  private statusSubscription!: Subscription; // To manage subscription lifecycle
+  ticketPoolStatus: any = null;
+  private statusSubscription!: Subscription;
 
   constructor(private webSocketService: WebSocketService) {}
 
   ngOnInit(): void {
-    // Subscribe to ticket pool status updates
-    this.statusSubscription = this.webSocketService
-      .getTicketPoolStatus()
-      .subscribe({
-        next: (status) => {
-          this.ticketPoolStatus = status; // Update ticket pool status
-        },
-        error: (error) => {
-          console.error('Error receiving ticket pool status:', error);
-        }
-      });
+    // Subscribe to ticket pool status observable
+    this.statusSubscription = this.webSocketService.getTicketPoolStatus().subscribe({
+      next: (status) => {
+        this.ticketPoolStatus = status; // Update the status
+      },
+      error: (error) => {
+        console.error('Error receiving ticket pool status:', error);
+      }
+    });
+
+    // Request the latest ticket pool status from the server
+    this.webSocketService.sendMessage('status');
   }
 
   ngOnDestroy(): void {
-    // Ensure subscription is cleaned up to prevent memory leaks
+    // Clean up the subscription to avoid memory leaks
     if (this.statusSubscription) {
       this.statusSubscription.unsubscribe();
     }
