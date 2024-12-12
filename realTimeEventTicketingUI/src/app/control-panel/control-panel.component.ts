@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
-import { ControlPanelService } from '../control-panel.service';
+import { ControlPanelService } from '../services/control-panel.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -21,7 +21,10 @@ export class ControlPanelComponent {
     this.threadsRunning = this.controlPanelService.isThreadsRunning();
   }
 
-
+  /**
+   * This method calls the controlPanelService to start the vendor threads. 
+   * Upon a successful response, it sets the threads to a running state, updates the status message, and reloads the page.
+   */
   startThreads(): void {
     this.controlPanelService.startThreads().subscribe({
       next: (response) => {
@@ -36,6 +39,10 @@ export class ControlPanelComponent {
     });
   }
 
+  /**
+   * Calls the controlPanelService to stop the vendor threads. 
+   * Upon a successful response, it sets the threads to a non-running state,
+   */
   stopThreads(): void {
     this.controlPanelService.stopThreads().subscribe({
       next: (response) => {
@@ -50,6 +57,9 @@ export class ControlPanelComponent {
     });
   }
 
+   /**
+   * Calls the controlPanelService to reset the logs.
+   */
   resetLogs(): void {
     this.controlPanelService.resetLogs().subscribe({
       next: (response) => {
@@ -64,10 +74,13 @@ export class ControlPanelComponent {
     });
   }
 
+
+  /**
+   * reloads page without pushing an entry into browser history
+   */
   private reloadPage(): void {
-    // Refresh the current route without navigating elsewhere
     this.router.navigateByUrl('/logs', { skipLocationChange: true }).then(() => {
-      this.router.navigate([this.router.url]); // Reload current route
+      this.router.navigate([this.router.url]);
     });
   }
 

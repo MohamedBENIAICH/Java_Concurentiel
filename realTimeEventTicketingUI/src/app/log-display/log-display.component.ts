@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ControlPanelComponent } from "../control-panel/control-panel.component";
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
-import { WebSocketService } from '../websocket.service';
+import { WebSocketService } from '../services/websocket.service';
 import {MatButtonModule} from '@angular/material/button';
 
 @Component({
@@ -19,6 +19,9 @@ export class LogDisplayComponent {
 
   constructor(private webSocketService: WebSocketService) {}
 
+  /**
+   * Called when component is initialized and then subscribes to the log message updates from WebSocketService.
+   */
   ngOnInit(): void {
     this.logsSubscription = this.webSocketService.getLogs().subscribe({
       next: (newLogs) => {
@@ -33,6 +36,9 @@ export class LogDisplayComponent {
     });
   }
 
+  /**
+   * Called when navigating to a different route and unsubscribes from log messages to prevent memory leaks
+   */
   ngOnDestroy(): void {
     if (this.logsSubscription) {
       this.logsSubscription.unsubscribe();

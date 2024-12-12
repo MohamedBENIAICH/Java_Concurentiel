@@ -13,20 +13,23 @@ public class Vendor extends User implements Runnable {
     private BigDecimal ticketPrice;
     private static final Logger logger = Logger.getLogger(Vendor.class.getName());
 
-    public Vendor(String companyName, String address, String email, String telNo, String eventName, String location, BigDecimal ticketPrice, TicketPool ticketPool) {
-        super(companyName, address, email, telNo);
+    public Vendor(String vendorName, String address, String email, String telNo, String eventName, String location, BigDecimal ticketPrice, TicketPool ticketPool) {
+        super(vendorName, address, email, telNo);
         this.ticketPool = ticketPool;
         this.eventName = eventName;
         this.location = location;
         this.ticketPrice = ticketPrice;
     }
 
+    /**
+     * Processes for each vendor thread to call the method to add tickets to the buffer
+     */
     @Override
     public void run() {
         try {
             while (ticketPool.getTicketCount().get()<totalTickets && !Thread.currentThread().isInterrupted()) {
                 ticketPool.addTickets(getName(), totalTickets, eventName, location, ticketPrice);
-                Thread.sleep((long) (1000/ticketReleaseRate));
+                Thread.sleep((long) (1000*ticketReleaseRate));
             }
         } catch (InterruptedException e) {
             logger.info(Thread.currentThread().getName() + " interrupted.");

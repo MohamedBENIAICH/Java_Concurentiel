@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Vendor } from '../vendor/vendor.module';
-import { VendorService } from '../vendor.service';
+import { VendorService } from '../services/vendor.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import {MatTableModule} from '@angular/material/table';
 import {MatButtonModule} from '@angular/material/button';
@@ -24,6 +24,9 @@ export class VendorListComponent {
 	}
 	ngOnInit(): void {}
 
+	/**
+	 * Retreives all vendors in database to display
+	 */
 	getVendorList(): void {
 		this.vendorService.getVendors().subscribe(
 			{
@@ -37,6 +40,10 @@ export class VendorListComponent {
 		)
 	}
 
+	/**
+	 * Removes specific vendor from database
+	 * @param vendorId id of the vendor to be deleted
+	 */
 	deleteVendor(vendorId: number): void {
 		this.vendorService.deleteVendor(vendorId).subscribe(
 			{

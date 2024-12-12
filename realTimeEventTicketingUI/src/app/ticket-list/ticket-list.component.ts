@@ -4,7 +4,7 @@ import {MatTableModule} from '@angular/material/table';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import { Router, RouterModule } from '@angular/router';
-import { TicketService } from '../ticket.service';
+import { TicketService } from '../services/ticket.service';
 import { Ticket } from './ticket-list.module';
 
 @Component({
@@ -26,6 +26,9 @@ export class TicketListComponent implements OnInit {
 
 	}
 
+	/**
+	 * Retrieves tickets from database to display
+	 */
 	getTicketList(): void {
 		this.ticketService.getTickets().subscribe(
 			{

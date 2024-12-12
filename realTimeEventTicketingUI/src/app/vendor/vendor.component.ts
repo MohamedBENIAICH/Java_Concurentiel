@@ -13,7 +13,7 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
-import { VendorService } from '../vendor.service';
+import { VendorService } from '../services/vendor.service';
 import { Vendor } from './vendor.module';
 
 @Component({
@@ -37,14 +37,15 @@ export class VendorComponent {
     ticketPrice: 0
   };
 
-  clickFunc() {
-    console.log("This button works!");
-    }
-
   constructor(private vendorService: VendorService, private router: Router, private activatedRoute: ActivatedRoute) {
 
   }
 
+  /**
+   * Calls the vendorService to save the current form values. 
+	 * After saving it logs the response and resets the form.
+   * @param vendorForm NgForm that contains all completed and validated vendor information
+   */
   saveVendor(vendorForm: NgForm): void {
     this.vendorService.saveVendor(this.vendor).subscribe(
       {

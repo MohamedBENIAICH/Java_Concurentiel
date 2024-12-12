@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { WebSocketService } from '../websocket.service';
+import { WebSocketService } from '../services/websocket.service';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 
@@ -16,23 +16,26 @@ export class TicketStatusComponent {
 
   constructor(private webSocketService: WebSocketService) {}
 
+  /**
+   * Called when component is initialized and then subscribes to the TicketPool status message updates from WebSocketService.
+   */
   ngOnInit(): void {
-    // Subscribe to ticket pool status observable
     this.statusSubscription = this.webSocketService.getTicketPoolStatus().subscribe({
       next: (status) => {
-        this.ticketPoolStatus = status; // Update the status
+        this.ticketPoolStatus = status; 
       },
       error: (error) => {
         console.error('Error receiving ticket pool status:', error);
       }
     });
 
-    // Request the latest ticket pool status from the server
     this.webSocketService.sendMessage('status');
   }
 
+  /**
+   * Called when navigating to a different route and unsubscribes from TicketPool status messages to prevent memory leaks
+   */
   ngOnDestroy(): void {
-    // Clean up the subscription to avoid memory leaks
     if (this.statusSubscription) {
       this.statusSubscription.unsubscribe();
     }

@@ -1,7 +1,7 @@
 .status-container {
     display: flex;
-    justify-content: center;  /* Center horizontally */
-    align-items: center;      /* Center vertically */
-    margin-top: 50px;                /* Remove default margin */
+    justify-content: center;  
+    align-items: center;    
+    margin-top: 50px;            
     color: #3f001b;
 }

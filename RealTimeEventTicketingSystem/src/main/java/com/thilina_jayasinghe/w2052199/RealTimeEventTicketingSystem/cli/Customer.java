@@ -31,6 +31,9 @@ public class Customer extends User implements Runnable {
         isVIP = VIP;
     }
 
+    /**
+     * Processes for each customer thread to remove tickets from buffer
+     */
     @Override
     public void run () {
         try {
@@ -39,7 +42,7 @@ public class Customer extends User implements Runnable {
                 if (ticket == null) {
                     break;
                 }
-                Thread.sleep((long) (1000/customerRetrievalRate));
+                Thread.sleep((long) (1000*customerRetrievalRate));
             }
         } catch (InterruptedException e) {
             System.out.println(Thread.currentThread().getName() + " interrupted.");

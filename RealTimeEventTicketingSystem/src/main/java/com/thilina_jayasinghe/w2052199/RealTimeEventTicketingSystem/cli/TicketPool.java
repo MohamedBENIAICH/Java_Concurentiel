@@ -23,7 +23,14 @@ public class TicketPool {
         ticketsToBePurchased = new AtomicInteger(Objects.requireNonNull(GsonSerializer.deserializeConfig()).getTotalTickets());
     }
 
-
+    /**
+     * Used by vendors to add tickets to buffer for customers to purchase
+     * @param vendorName name attribute of Vendor instance
+     * @param totalTickets total tickets configured at system initialization
+     * @param eventName name of the event for which vendor is selling tickets
+     * @param location location of the event
+     * @param ticketPrice price of vendor's tickets
+     */
     protected synchronized void addTickets(String vendorName, int totalTickets,String eventName, String location, BigDecimal ticketPrice) {
         try {
             while ((ticketList.size() == maxTicketCapacity) && (ticketCount.get() != totalTickets)) {       // if the list is full, it will wait indefinitely until a free spot is available
@@ -45,6 +52,12 @@ public class TicketPool {
         }
     }
 
+    /**
+     * Used by customers to purchase tickets in buffer
+     * @param customer instance of Customer making the purchase
+     * @param timestamp timestamp of the ticket purchase
+     * @return Ticket instance that was removed from the buffer by the customer
+     */
     protected synchronized Ticket removeTicket(Customer customer, String timestamp) {
         try {
             notifyAll();

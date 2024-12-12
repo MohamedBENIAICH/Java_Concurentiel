@@ -14,7 +14,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
 import { Customer } from './customer.module';
-import { CustomerService } from '../customer.service';
+import { CustomerService } from '../services/customer.service';
 
 @Component({
   selector: 'app-customer',
@@ -36,6 +36,11 @@ export class CustomerComponent {
 
 	constructor(private customerService: CustomerService, private router: Router, private activatedRoute: ActivatedRoute) {}
 
+	/**
+	 * Calls the customerService to save the current form values. 
+	 * After saving it logs the response and resets the form.
+	 * @param customerForm NgForm that contains all completed and validated customer information
+	 */
 	saveCustomer(customerForm: NgForm): void {
 		this.customerService.saveCustomer(this.customer).subscribe(
 		  {

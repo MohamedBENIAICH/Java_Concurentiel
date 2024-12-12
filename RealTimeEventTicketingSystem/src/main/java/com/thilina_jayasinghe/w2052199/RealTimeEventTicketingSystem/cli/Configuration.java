@@ -66,6 +66,10 @@ public class Configuration {
         }
     }
 
+    /**
+     * Prompts input from user and initializes system configuration settings
+     * Calls the method to save the configuration settings in a json file
+     */
     public static void configureSystem() {
         int totTickets = 0;
         double sellRate = 0;
@@ -78,29 +82,42 @@ public class Configuration {
                 totTickets = input.nextInt();
                 input.nextLine();
 
-                if (totTickets <= 0) continue;
+                if (totTickets <= 0) {
+                    System.out.println("Enter a number greater than 0");
+                    continue;
+                }
 
                 System.out.println("Enter ticket release rate.");
                 sellRate = input.nextDouble();
                 input.nextLine();
 
-                if ((sellRate <= 0) || (sellRate > totTickets)) continue;
+                if ((sellRate <= 0)) {
+                    System.out.println("Sell rate should be less than total tickets");
+                    continue;
+                }
 
-                System.out.println("Enter allowable ticket purchase rate of customers.");
+                System.out.println("Enter ticket purchase rate of customers.");
                 buyRate = input.nextDouble();
                 input.nextLine();
 
-                if ((buyRate <= 0) || (buyRate > sellRate)) continue;
+                if ((buyRate <= 0) || (buyRate < sellRate)) {
+                    System.out.println("Buy rate should be greater than or equal to sell rate.");
+                    continue;
+                }
 
                 System.out.println("Enter maximum number of tickets available at any given instance.");
                 maxCapacity = input.nextInt();
                 input.nextLine();
 
-                if ((maxCapacity > totTickets)  || (maxCapacity < sellRate)) continue;
+                if ((maxCapacity > totTickets)) {
+                    System.out.println("Maximum buffer capacity should be less than total tickets.");
+                    continue;
+                }
 
 
                 isConfiguring = false;
             } catch (InputMismatchException exception) {
+                input.nextLine();
                 System.out.println("Enter valid input.");
             }
             GsonSerializer.serializeConfig(new Configuration(totTickets, buyRate, sellRate, maxCapacity));

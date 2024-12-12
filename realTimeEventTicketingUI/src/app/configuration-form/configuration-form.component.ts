@@ -13,7 +13,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
-import { ConfigurationService } from '../configuration.service';
+import { ConfigurationService } from '../services/configuration.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
@@ -46,13 +46,16 @@ export class ConfigurationFormComponent {
     });
   }
 
+  /**
+   * Validates the inputs for total tickets, ticket release, retrieval and maximum capacity fields.
+   */
   validateForm() {
     const totalTickets = this.form.get('totalTickets')?.value || 0;
     const maxTicketCapacity = this.form.get('maxTicketCapacity')?.value || 0;
     const ticketReleaseRate = this.form.get('ticketReleaseRate')?.value || 0;
     const customerRetrievalRate = this.form.get('customerRetrievalRate')?.value || 0;
 
-    // Validate maxCapacity
+
     if (maxTicketCapacity <= 0 || maxTicketCapacity > 0.5 * totalTickets) {
       this.form.get('maxTicketCapacity')?.setErrors({
         maxCapacityInvalid: true,
@@ -62,7 +65,7 @@ export class ConfigurationFormComponent {
       this.form.get('maxTicketCapacity')?.setErrors(null);
     }
 
-    // Validate intervals
+
     if (ticketReleaseRate <= 0 || customerRetrievalRate <= 0) {
       this.form.get('ticketReleaseRate')?.setErrors({
         intervalInvalid: true,
@@ -78,6 +81,10 @@ export class ConfigurationFormComponent {
     }
   }
 
+  /**
+   * Calls the configurationService to save the current form values. 
+   * After saving it logs the response and resets the form.
+   */
   saveConfiguration(): void {
     if (this.form.valid) {
       this.configurationService.saveConfiguration(this.form.value).subscribe({

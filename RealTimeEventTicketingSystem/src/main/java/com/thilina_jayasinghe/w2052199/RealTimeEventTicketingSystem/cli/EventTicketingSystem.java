@@ -42,7 +42,7 @@ public class EventTicketingSystem {
                             Customer customer = (Customer) User.registerUser("Customer", ticketPool);
                             Thread customerThread = new Thread(customer, customer.getName());
                             if (customer.getIsVIP()) {
-                                customerThread.setPriority(Thread.MAX_PRIORITY);
+                                customerThread.setPriority(Thread.MAX_PRIORITY);     // if the customer is a VIP then priority is set to maximum for that thread
                             }
                             threads.add(customerThread);
                             break;
@@ -66,10 +66,15 @@ public class EventTicketingSystem {
                 }
             }
         } catch (Exception e) {
+            input.nextLine();
             System.out.println(e.getMessage());
         }
     }
 
+    /**
+     * Accepts an arraylist of threads and starts them, after the threads have executed, the list is cleared
+     * @param threads a collection of executable vendor and customer threads
+     */
     public static void start(List<Thread> threads) {
         for (Thread thread : threads) {
             System.out.println(thread.getName());

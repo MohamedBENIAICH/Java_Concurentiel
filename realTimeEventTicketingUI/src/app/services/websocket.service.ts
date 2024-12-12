@@ -14,61 +14,80 @@ export class WebSocketService {
     this.connectWebSocket();
   }
 
-  // Method to initialize the WebSocket connection
+  /**
+   * Method to initialize the WebSocket connection
+   */
   private connectWebSocket(): void {
     try {
       this.socket = webSocket('ws://localhost:9090/ws-native');
-      this.listenToServerMessages(); // Start listening to server messages
+      this.listenToServerMessages(); 
     } catch (error) {
       console.log("Couldn't connect to WebSocket", error);
     }
   }
 
-  // Listen to messages from the WebSocket server
+  /**
+   * Listen to messages from the WebSocket server
+   */
   private listenToServerMessages(): void {
     this.socket?.subscribe({
       next: (message) => this.handleServerMessage(message),
       error: (err) => {
         console.log('WebSocket error:', err);
-        this.reconnectWebSocket(); // Attempt reconnection on error
+        this.reconnectWebSocket(); 
       },
       complete: () => {
         console.log('WebSocket connection closed');
-        this.reconnectWebSocket(); // Attempt reconnection when closed
+        this.reconnectWebSocket(); 
       },
     });
   }
 
-  // Handle incoming messages from the server
+  /**
+   * Handle incoming messages from the server
+   * @param message message received from backend
+   */
   private handleServerMessage(message: any): void {
     switch (message.type) {
       case 'status':
-        this.statusSubject.next(message.data); // Update ticket pool status
+        this.statusSubject.next(message.data);
         break;
       case 'log':
-        this.updateLogs(message.data); // Update logs
+        this.updateLogs(message.data); 
         break;
       default:
         console.log('Unknown message type:', message.type);
     }
   }
 
-  // Update logs in the BehaviorSubject
+  /**
+   *  Update logs in the status
+   * @param newLogs newly received logs
+   */
   private updateLogs(newLogs: string[]): void {
     this.logsSubject.next(newLogs);
   }
 
-  // Expose ticket pool status as an observable
+  /**
+   * Expose ticket pool status as an observable
+   * @returns Observable ticketpool status
+   */
   public getTicketPoolStatus(): Observable<any> {
     return this.statusSubject.asObservable();
   }
 
-  // Expose logs as an observable
+  /**
+   * Expose logs as an observable
+   * @returns Observable logs
+   */
   public getLogs(): Observable<string[]> {
     return this.logsSubject.asObservable();
   }
 
-  // Send a message to the WebSocket server
+  /**
+   * Send a message to the WebSocket server
+   * @param messageType type of message sent
+   */
   public sendMessage(messageType: string): void {
     if (this.socket) {
       this.socket.next({ type: messageType });
@@ -77,7 +96,9 @@ export class WebSocketService {
     }
   }
 
-  // Close the WebSocket connection
+  /**
+   * Close the WebSocket connection
+   */
   public closeConnection(): void {
     if (this.socket) {
       this.socket.complete();
@@ -85,9 +106,11 @@ export class WebSocketService {
     }
   }
 
-  // Reconnect WebSocket after a failure
+  /**
+   * Reconnect to WebSocket after a failure every 5 seconds
+   */
   private reconnectWebSocket(): void {
     console.log('Attempting to reconnect to WebSocket...');
-    setTimeout(() => this.connectWebSocket(), 5000); // Retry connection after 5 seconds
+    setTimeout(() => this.connectWebSocket(), 5000); 
   }
 }

@@ -67,6 +67,10 @@ public class Ticket {
         this.location = location;
     }
 
+    /**
+     * Method that returns details of ticket object
+     * @return String value containing Ticket instance attributes arranged meaningfully
+     */
     @Override
     public String toString() {
         return "Ticket number " + getTicketNo() + ", released by " + getVendorName() + " was bought by " + getCustomerName() + " for a price of " + getTicketPrice() + ", on " + getTimestamp();

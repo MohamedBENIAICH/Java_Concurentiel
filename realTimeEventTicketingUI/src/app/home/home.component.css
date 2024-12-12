@@ -1,27 +1,27 @@
-/* Apply styles to the container */
+
 .container {
     display: flex;
-    justify-content: center;  /* Center horizontally */
-    align-items: center;      /* Center vertically */
-    margin-top: 50px;                /* Remove default margin */
+    justify-content: center;
+    align-items: center;      
+    margin-top: 50px;            
     color: #3f001b;
   }
   
-  /* Apply styles to the mat-card */
+ 
   mat-card {
-    width: 98%;             /* Adjust width of the card */
+    width: 98%;            
     display: flex;
-    flex-direction: column;   /* Stack content vertically */
-    align-items: center;      /* Center the content horizontally inside the card */
-    text-align: center;       /* Center the text inside the card */
+    flex-direction: column;   
+    align-items: center;     
+    text-align: center;     
   }
   
-  /* Apply styles to mat-card-header to ensure content is centered */
+
   mat-card-header {
-    text-align: center;       /* Center the header content */
+    text-align: center;       
     display: flex;
-    flex-direction: column;   /* Stack title and subtitle vertically */
-    align-items: center;      /* Center items horizontally */
+    flex-direction: column;  
+    align-items: center;   
     padding-bottom: 10px;
   }
 
@@ -35,14 +35,14 @@
     padding-bottom: 10px;
   }
   
-  /* Apply styles to mat-card-actions to ensure button is centered */
+
   mat-card-actions {
     display: flex;
-    justify-content: center;   /* Center the button horizontally */
-    width: 100%;               /* Make the actions container take up full width */
+    justify-content: center;  
+    width: 100%;    
   }
   
   button {
-    text-align: center;       /* Ensure button text is centered */
+    text-align: center;    
     margin-bottom: 10px;
   }

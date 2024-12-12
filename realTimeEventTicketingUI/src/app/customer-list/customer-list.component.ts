@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Customer } from '../customer/customer.module';
-import { CustomerService } from '../customer.service';
+import { CustomerService } from '../services/customer.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import {MatTableModule} from '@angular/material/table';
 import {MatButtonModule} from '@angular/material/button';
@@ -24,6 +24,9 @@ export class CustomerListComponent {
 	}
 	ngOnInit(): void {}
 
+	/**
+	 * Retreives all customers in database to display
+	 */
 	getCustomerList(): void {
 		this.customerService.getCustomers().subscribe(
 			{
@@ -37,6 +40,10 @@ export class CustomerListComponent {
 		)
 	}
 
+	/**
+	 * Removes specific customer from database
+	 * @param customerId id of the customer to be deleted
+	 */
 	deleteEmployee(customerId: number): void {
 		this.customerService.deleteCustomer(customerId).subscribe(
 			{
