@@ -87,6 +87,8 @@ Go to the java class file in the path RealTimeEventTicketingSystem/src/main/java
 
 Run the class
 
+After the exiting the program, view "tickets.json" to view transaction history and "system_config_settings.json" file to view last used configuration settings
+
 ### 2. Web App
 
 Start the backend (Spring Boot) by going to the class RealTimeEventTicketingSystem/src/main/java/com/thilina_jayasinghe/w2052199/RealTimeEventTicketingSystem/RealTimeEventTicketingSystemApplication.java
