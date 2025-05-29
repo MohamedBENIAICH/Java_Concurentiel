@@ -57,7 +57,7 @@ Go to the file on the path RealTimeEventTicketingSystem/src/main/resources/appli
 
 Set the value for "spring.jpa.hibernate.ddl-auto" property from "update" to "create" since you're running it for the first time
 
-### 2. Frontend (Angular)
+### 2. Frontend (React)
 
 Install Dependencies
 
