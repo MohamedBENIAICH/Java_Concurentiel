@@ -23,12 +23,9 @@ Make sure you have an internet connection and the following installed:
 Java (JDK 17 or later)
 
 Node.js (LTS version)
-
-Angular CLI
-
 bash
 
-npm install -g @angular/cli
+npm install
 
 MySQL Server and MySQL Workbench
 
