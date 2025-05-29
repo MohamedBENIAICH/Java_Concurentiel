@@ -10,7 +10,7 @@ This project features a Spring Boot backend, an Angular frontend, and MySQL as t
 
 ## Tech Stack
 Backend: Spring Boot (Java)
-Frontend: Angular (TypeScript)
+Frontend: React (TypeScript)
 Database: MySQL Workbench
 
 ## IDE:
