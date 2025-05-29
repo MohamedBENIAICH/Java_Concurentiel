@@ -41,10 +41,16 @@ export const Dashboard: React.FC = () => {
     return response.data;
   });
 
-  const { data: tickets = [] } = useQuery("tickets", async () => {
-    const response = await getTickets();
-    return response.data;
-  });
+  const { data: tickets = [] } = useQuery(
+    "tickets",
+    async () => {
+      const response = await getTickets();
+      return response.data;
+    },
+    {
+      refetchInterval: 2000, // Refetch every 2 seconds
+    }
+  );
 
   const { data: config } = useQuery("configuration", async () => {
     const response = await getConfiguration();
