@@ -61,9 +61,187 @@ export const TicketList: React.FC = () => {
     }
   }, [tickets]);
 
+  // Function to generate PDF data for a ticket
+  const generateTicketPDF = async (ticket: Ticket): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const pdfContent = document.createElement("div");
+      pdfContent.style.width = "210mm";
+      pdfContent.style.padding = "15mm";
+      pdfContent.style.backgroundColor = "white";
+      pdfContent.style.fontFamily = "Arial, sans-serif";
+      
+      const customerName = getCustomerDisplayName(ticket);
+      
+      pdfContent.innerHTML = `
+        <div style="text-align: center; margin-bottom: 20px;">
+          <h1 style="color: #3b82f6; margin: 0; font-size: 24px;">Event Ticket</h1>
+          <p style="color: #64748b; margin: 5px 0 0 0;">Ticket #${ticket.ticketNo}</p>
+        </div>
+        
+        <div style="display: flex; justify-content: center; margin: 20px 0;">
+          <div id="qrcode-container" style="padding: 10px; background: white; border: 1px solid #e2e8f0; border-radius: 8px;"></div>
+        </div>
+        
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px; border: 1px solid #e2e8f0;">
+          <thead>
+            <tr style="background-color: #f1f5f9;">
+              <th style="text-align: left; padding: 10px; border: 1px solid #e2e8f0; color: #1e3a8a;">Field</th>
+              <th style="text-align: left; padding: 10px; border: 1px solid #e2e8f0; color: #1e3a8a;">Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Transaction ID</td>
+              <td style="padding: 10px; border: 1px solid #e2e8f0;">${ticket.transactionId}</td>
+            </tr>
+            <tr style="background-color: #f8fafc;">
+              <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Event</td>
+              <td style="padding: 10px; border: 1px solid #e2e8f0;">${ticket.eventName}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Location</td>
+              <td style="padding: 10px; border: 1px solid #e2e8f0;">${ticket.location}</td>
+            </tr>
+            <tr style="background-color: #f8fafc;">
+              <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Vendor</td>
+              <td style="padding: 10px; border: 1px solid #e2e8f0;">${ticket.vendor}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Customer</td>
+              <td style="padding: 10px; border: 1px solid #e2e8f0;">${customerName}</td>
+            </tr>
+            <tr style="background-color: #f8fafc;">
+              <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Price</td>
+              <td style="padding: 10px; border: 1px solid #e2e8f0;">$${ticket.ticketPrice}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Date</td>
+              <td style="padding: 10px; border: 1px solid #e2e8f0;">${format(
+                new Date(ticket.timestamp),
+                "MMM dd, yyyy HH:mm"
+              )}</td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <div style="margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 15px; text-align: center;">
+          <p style="color: #64748b; font-size: 12px; margin: 5px 0;">Generated on ${format(new Date(), "MMM dd, yyyy HH:mm")}</p>
+          <p style="color: #64748b; font-size: 12px; margin: 5px 0;">Please present this ticket at the event entrance.</p>
+        </div>
+      `;
+      
+      document.body.appendChild(pdfContent);
+      
+      const qrContainer = pdfContent.querySelector("#qrcode-container");
+      if (qrContainer) {
+        const qrData = JSON.stringify({
+          transactionId: ticket.transactionId,
+          ticketNo: ticket.ticketNo,
+          eventName: ticket.eventName,
+          location: ticket.location,
+          vendor: ticket.vendor,
+          customer: customerName,
+          price: ticket.ticketPrice,
+          date: format(new Date(ticket.timestamp), "MMM dd, yyyy HH:mm"),
+        });
+        
+        ReactDOM.render(
+          <QRCodeSVG value={qrData} size={150} level="H" />,
+          qrContainer
+        );
+      }
+      
+      setTimeout(() => {
+        const options = {
+          margin: 10,
+          filename: `ticket_${ticket.ticketNo}.pdf`,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        
+        html2pdf()
+          .from(pdfContent)
+          .set(options)
+          .output('datauristring')
+          .then((pdfDataUri: string) => {
+            document.body.removeChild(pdfContent);
+            // Extract base64 data from data URI
+            const base64Data = pdfDataUri.split(',')[1];
+            resolve(base64Data);
+          })
+          .catch((error: Error) => {
+            document.body.removeChild(pdfContent);
+            reject(error);
+          });
+      }, 500);
+    });
+  };
+
+  const handleSendTicket = async (ticket: Ticket) => {
+    if (!ticket.transactionId) {
+      toast.error("Invalid transaction ID");
+      return;
+    }
+
+    const customerId = ticket.customerId || extractCustomerId(ticket.customer);
+    if (!customerId) {
+      toast.error("No customer associated with this ticket");
+      return;
+    }
+
+    try {
+      toast.info("Generating PDF...");
+      const pdfData = await generateTicketPDF(ticket);
+      toast.info("Sending ticket...");
+      await sendTicketMutation.mutateAsync({ 
+        transactionId: ticket.transactionId, 
+        customerId: customerId,
+        pdfData: pdfData
+      });
+    } catch (error) {
+      console.error('Error sending ticket:', error);
+      toast.error("Failed to send ticket");
+    }
+  };
+
+  const handleSendAllTickets = async (ticket: Ticket) => {
+    const customerId = ticket.customerId || extractCustomerId(ticket.customer);
+    if (!customerId) {
+      toast.error("No customer associated with this ticket");
+      return;
+    }
+
+    try {
+      // Get all tickets for this customer
+      const customerTickets = tickets.filter((t: Ticket) => {
+        const tCustomerId = t.customerId || extractCustomerId(t.customer);
+        return tCustomerId === customerId;
+      });
+
+      toast.info("Generating PDFs...");
+      const pdfDataArray = await Promise.all(
+        customerTickets.map(async (t) => ({
+          transactionId: t.transactionId!,
+          pdfData: await generateTicketPDF(t)
+        }))
+      );
+
+      toast.info("Sending tickets...");
+      await sendAllTicketsMutation.mutateAsync({
+        customerId,
+        pdfDataArray
+      });
+    } catch (error) {
+      console.error('Error sending tickets:', error);
+      toast.error("Failed to send tickets");
+    }
+  };
+
+  // Update mutations to handle the new parameters
   const sendTicketMutation = useMutation(
-    ({ transactionId, customerId }: { transactionId: number; customerId: number }) =>
-      sendTicketToCustomer(transactionId, customerId),
+    ({ transactionId, customerId, pdfData }: { transactionId: number; customerId: number; pdfData: string }) =>
+      sendTicketToCustomer(transactionId, customerId, pdfData),
     {
       onSuccess: () => {
         toast.success("Ticket sent successfully");
@@ -75,7 +253,8 @@ export const TicketList: React.FC = () => {
   );
 
   const sendAllTicketsMutation = useMutation(
-    (customerId: number) => sendAllTicketsToCustomer(customerId),
+    ({ customerId, pdfDataArray }: { customerId: number; pdfDataArray: { transactionId: number; pdfData: string }[] }) =>
+      sendAllTicketsToCustomer(customerId, pdfDataArray),
     {
       onSuccess: () => {
         toast.success("All tickets sent successfully");
@@ -245,12 +424,19 @@ export const TicketList: React.FC = () => {
         vendor: selectedTicket.vendor,
         customer: customerName,
         price: selectedTicket.ticketPrice,
-        date: format(new Date(selectedTicket.timestamp), "MMM dd, yyyy HH:mm"),
+        date: format(
+          new Date(selectedTicket.timestamp),
+          "MMM dd, yyyy HH:mm"
+        ),
       });
       
       // Rendre le QR code directement
       ReactDOM.render(
-        <QRCodeSVG value={qrData} size={150} level="H" />,
+        <QRCodeSVG
+          value={qrData}
+          size={150}
+          level="H"
+        />,
         qrContainer
       );
     }
@@ -276,34 +462,6 @@ export const TicketList: React.FC = () => {
           document.body.removeChild(pdfContent);
         });
     }, 500); // Attendre 500ms pour s'assurer que le QR code est rendu
-  };
-
-  const handleSendTicket = (ticket: Ticket) => {
-    if (!ticket.transactionId) {
-      toast.error("Invalid transaction ID");
-      return;
-    }
-
-    const customerId = ticket.customerId || extractCustomerId(ticket.customer);
-    if (!customerId) {
-      toast.error("No customer associated with this ticket");
-      return;
-    }
-
-    sendTicketMutation.mutate({ 
-      transactionId: ticket.transactionId, 
-      customerId: customerId 
-    });
-  };
-
-  const handleSendAllTickets = (ticket: Ticket) => {
-    const customerId = ticket.customerId || extractCustomerId(ticket.customer);
-    if (!customerId) {
-      toast.error("No customer associated with this ticket");
-      return;
-    }
-
-    sendAllTicketsMutation.mutate(customerId);
   };
 
   const columns = [

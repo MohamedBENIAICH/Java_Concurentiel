@@ -62,10 +62,13 @@ export const getCustomerName = async (customerId: number): Promise<string> => {
 // Ticket API
 export const getTickets = () => api.get('/get/tickets');
 export const saveTicket = (ticket: Ticket) => api.post('/save/ticket', { params: { ticket } });
-export const sendTicketToCustomer = (transactionId: number, customerId: number) => 
-  api.post(`/send/ticket/${transactionId}/customer/${customerId}`);
-export const sendAllTicketsToCustomer = (customerId: number) => 
-  api.post(`/send/tickets/customer/${customerId}`);
+
+// Update send ticket functions to include PDF data
+export const sendTicketToCustomer = async (transactionId: number, customerId: number, pdfData: string) => 
+  api.post(`/send/ticket/${transactionId}/customer/${customerId}`, { pdfData });
+
+export const sendAllTicketsToCustomer = async (customerId: number, pdfDataArray: { transactionId: number, pdfData: string }[]) => 
+  api.post(`/send/tickets/customer/${customerId}`, { pdfDataArray });
 
 // Configuration API
 export const getConfiguration = () => api.get('/get/config');
