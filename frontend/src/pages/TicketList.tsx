@@ -147,10 +147,15 @@ export const TicketList: React.FC = () => {
     setShowModal(false);
   };
 
+  const getCustomerDisplayName = (ticket: Ticket): string => {
+    const customerId = ticket.customerId || extractCustomerId(ticket.customer);
+    if (!customerId) return "No customer";
+    return customerNames[customerId] || "Loading...";
+  };
+
   const downloadTicketAsPDF = () => {
     if (!selectedTicket) return;
 
-    // Revenir à une approche plus simple pour résoudre le problème de PDF vide
     const element = document.getElementById("ticket-pdf-content");
     if (!element) {
       console.error("Element ticket-pdf-content not found");
@@ -163,6 +168,9 @@ export const TicketList: React.FC = () => {
     pdfContent.style.padding = "15mm";
     pdfContent.style.backgroundColor = "white";
     pdfContent.style.fontFamily = "Arial, sans-serif";
+    
+    // Get customer name
+    const customerName = getCustomerDisplayName(selectedTicket);
     
     // Contenu simple mais bien formaté
     pdfContent.innerHTML = `
@@ -201,7 +209,7 @@ export const TicketList: React.FC = () => {
           </tr>
           <tr>
             <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Customer</td>
-            <td style="padding: 10px; border: 1px solid #e2e8f0;">${selectedTicket.customer}</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0;">${customerName}</td>
           </tr>
           <tr style="background-color: #f8fafc;">
             <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Price</td>
@@ -235,7 +243,7 @@ export const TicketList: React.FC = () => {
         eventName: selectedTicket.eventName,
         location: selectedTicket.location,
         vendor: selectedTicket.vendor,
-        customer: selectedTicket.customer,
+        customer: customerName,
         price: selectedTicket.ticketPrice,
         date: format(new Date(selectedTicket.timestamp), "MMM dd, yyyy HH:mm"),
       });
@@ -436,7 +444,7 @@ export const TicketList: React.FC = () => {
                               eventName: selectedTicket.eventName,
                               location: selectedTicket.location,
                               vendor: selectedTicket.vendor,
-                              customer: selectedTicket.customer,
+                              customer: getCustomerDisplayName(selectedTicket),
                               price: selectedTicket.ticketPrice,
                               date: format(
                                 new Date(selectedTicket.timestamp),
@@ -475,7 +483,7 @@ export const TicketList: React.FC = () => {
                           </tr>
                           <tr>
                             <td style={{ padding: "4px", borderBottom: "1px solid #eee", fontWeight: "bold" }}>Customer:</td>
-                            <td style={{ padding: "4px", borderBottom: "1px solid #eee" }}>{selectedTicket.customer}</td>
+                            <td style={{ padding: "4px", borderBottom: "1px solid #eee" }}>{getCustomerDisplayName(selectedTicket)}</td>
                           </tr>
                           <tr>
                             <td style={{ padding: "4px", borderBottom: "1px solid #eee", fontWeight: "bold" }}>Price:</td>
