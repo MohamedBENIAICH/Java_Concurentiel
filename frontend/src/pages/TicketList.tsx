@@ -8,6 +8,8 @@ import { Card } from "../components/ui/Card";
 import { getTickets } from "../api";
 import { Ticket } from "../types";
 import html2pdf from "html2pdf.js";
+import { QRCodeSVG } from "qrcode.react";
+import ReactDOM from "react-dom";
 
 export const TicketList: React.FC = () => {
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
@@ -24,7 +26,7 @@ export const TicketList: React.FC = () => {
     let timer: NodeJS.Timeout;
     if (showModal) {
       setShowQr(false);
-      timer = setTimeout(() => setShowQr(true), 5000); // match animation duration
+      timer = setTimeout(() => setShowQr(true), 1000); // reduced from 5000ms to 1000ms
     }
     return () => clearTimeout(timer);
   }, [showModal, selectedTicket]);
@@ -81,10 +83,126 @@ export const TicketList: React.FC = () => {
   };
 
   const downloadTicketAsPDF = () => {
+    if (!selectedTicket) return;
+
+    // Revenir à une approche plus simple pour résoudre le problème de PDF vide
     const element = document.getElementById("ticket-pdf-content");
-    if (element) {
-      html2pdf().from(element).save(`ticket_${selectedTicket?.ticketNo}.pdf`);
+    if (!element) {
+      console.error("Element ticket-pdf-content not found");
+      return;
     }
+
+    // Créer une copie du contenu pour le PDF
+    const pdfContent = document.createElement("div");
+    pdfContent.style.width = "210mm"; // A4 width
+    pdfContent.style.padding = "15mm";
+    pdfContent.style.backgroundColor = "white";
+    pdfContent.style.fontFamily = "Arial, sans-serif";
+    
+    // Contenu simple mais bien formaté
+    pdfContent.innerHTML = `
+      <div style="text-align: center; margin-bottom: 20px;">
+        <h1 style="color: #3b82f6; margin: 0; font-size: 24px;">Event Ticket</h1>
+        <p style="color: #64748b; margin: 5px 0 0 0;">Ticket #${selectedTicket.ticketNo}</p>
+      </div>
+      
+      <div style="display: flex; justify-content: center; margin: 20px 0;">
+        <div id="qrcode-container" style="padding: 10px; background: white; border: 1px solid #e2e8f0; border-radius: 8px;"></div>
+      </div>
+      
+      <table style="width: 100%; border-collapse: collapse; margin-top: 20px; border: 1px solid #e2e8f0;">
+        <thead>
+          <tr style="background-color: #f1f5f9;">
+            <th style="text-align: left; padding: 10px; border: 1px solid #e2e8f0; color: #1e3a8a;">Field</th>
+            <th style="text-align: left; padding: 10px; border: 1px solid #e2e8f0; color: #1e3a8a;">Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Transaction ID</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0;">${selectedTicket.transactionId}</td>
+          </tr>
+          <tr style="background-color: #f8fafc;">
+            <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Event</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0;">${selectedTicket.eventName}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Location</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0;">${selectedTicket.location}</td>
+          </tr>
+          <tr style="background-color: #f8fafc;">
+            <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Vendor</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0;">${selectedTicket.vendor}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Customer</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0;">${selectedTicket.customer}</td>
+          </tr>
+          <tr style="background-color: #f8fafc;">
+            <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Price</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0;">$${selectedTicket.ticketPrice}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Date</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0;">${format(
+              new Date(selectedTicket.timestamp),
+              "MMM dd, yyyy HH:mm"
+            )}</td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <div style="margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 15px; text-align: center;">
+        <p style="color: #64748b; font-size: 12px; margin: 5px 0;">Generated on ${format(new Date(), "MMM dd, yyyy HH:mm")}</p>
+        <p style="color: #64748b; font-size: 12px; margin: 5px 0;">Please present this ticket at the event entrance.</p>
+      </div>
+    `;
+    
+    // Ajouter temporairement à la page
+    document.body.appendChild(pdfContent);
+    
+    // Ajouter le QR code
+    const qrContainer = pdfContent.querySelector("#qrcode-container");
+    if (qrContainer) {
+      const qrData = JSON.stringify({
+        transactionId: selectedTicket.transactionId,
+        ticketNo: selectedTicket.ticketNo,
+        eventName: selectedTicket.eventName,
+        location: selectedTicket.location,
+        vendor: selectedTicket.vendor,
+        customer: selectedTicket.customer,
+        price: selectedTicket.ticketPrice,
+        date: format(new Date(selectedTicket.timestamp), "MMM dd, yyyy HH:mm"),
+      });
+      
+      // Rendre le QR code directement
+      ReactDOM.render(
+        <QRCodeSVG value={qrData} size={150} level="H" />,
+        qrContainer
+      );
+    }
+    
+    // Attendre un court instant pour s'assurer que le QR code est rendu
+    setTimeout(() => {
+      // Options pour html2pdf
+      const options = {
+        margin: 10,
+        filename: `ticket_${selectedTicket.ticketNo}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      
+      // Générer le PDF
+      html2pdf()
+        .from(pdfContent)
+        .set(options)
+        .save()
+        .then(() => {
+          // Nettoyer - supprimer le conteneur après la génération du PDF
+          document.body.removeChild(pdfContent);
+        });
+    }, 500); // Attendre 500ms pour s'assurer que le QR code est rendu
   };
 
   const columns = [
@@ -118,7 +236,7 @@ export const TicketList: React.FC = () => {
       {/* Ticket View Modal */}
       {showModal && selectedTicket && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-4 max-w-md w-full">
+          <div className="bg-white rounded-lg p-3 max-w-sm w-full">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">Ticket Details</h2>
               <button
@@ -129,8 +247,8 @@ export const TicketList: React.FC = () => {
               </button>
             </div>
             {/* Add Download Button */}
-            <div className="mb-4 flex justify-end">
-              <Button onClick={downloadTicketAsPDF} variant="outline">
+            <div className="mb-2 flex justify-end">
+              <Button onClick={downloadTicketAsPDF} variant="outline" className="text-sm py-1 px-2">
                 Download as PDF
               </Button>
             </div>
@@ -144,82 +262,97 @@ export const TicketList: React.FC = () => {
                   style={{
                     display: "flex",
                     flexDirection: "column",
-                    justifyContent: "space-between",
-                    height: "447px",
+                    justifyContent: "flex-start",
+                    minHeight: "447px",
+                    height: "auto",
+                    overflow: "visible",
                   }}
                 >
                   <div className="main-contents">
-                    <div className="success-icon">✓</div>
-                    <div className="success-title">Event Ticket</div>
-                    <div className="success-description">
-                      <p>
-                        <strong>Transaction ID:</strong>{" "}
-                        {selectedTicket.transactionId}
-                      </p>
-                      <p>
-                        <strong>Ticket No:</strong> {selectedTicket.ticketNo}
-                      </p>
-                      <p>
-                        <strong>Event:</strong> {selectedTicket.eventName}
-                      </p>
-                      <p>
-                        <strong>Location:</strong> {selectedTicket.location}
-                      </p>
-                      <p>
-                        <strong>Vendor:</strong> {selectedTicket.vendor}
-                      </p>
-                      <p>
-                        <strong>Customer:</strong> {selectedTicket.customer}
-                      </p>
-                      <p>
-                        <strong>Price:</strong> ${selectedTicket.ticketPrice}
-                      </p>
-                      <p>
-                        <strong>Date:</strong>{" "}
-                        {format(
-                          new Date(selectedTicket.timestamp),
-                          "MMM dd, yyyy HH:mm"
-                        )}
-                      </p>
+                    <div className="success-icon" style={{ width: "50px", height: "50px", fontSize: "24px", margin: "10px auto" }}>✓</div>
+                    <div className="success-title" style={{ fontSize: "18px", marginBottom: "5px" }}>Event Ticket</div>
+                    
+                    {/* QR Code at the top, only after animation */}
+                    {showQr && (
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          marginBottom: "10px",
+                          marginTop: "5px"
+                        }}
+                      >
+                        <div
+                          style={{
+                            background: "#fff",
+                            padding: 4,
+                            borderRadius: 4,
+                            border: "1px solid #eee"
+                          }}
+                        >
+                          <QRCodeSVG
+                            value={JSON.stringify({
+                              transactionId: selectedTicket.transactionId,
+                              ticketNo: selectedTicket.ticketNo,
+                              eventName: selectedTicket.eventName,
+                              location: selectedTicket.location,
+                              vendor: selectedTicket.vendor,
+                              customer: selectedTicket.customer,
+                              price: selectedTicket.ticketPrice,
+                              date: format(
+                                new Date(selectedTicket.timestamp),
+                                "MMM dd, yyyy HH:mm"
+                              ),
+                            })}
+                            size={90}
+                            level="H"
+                          />
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="success-description" style={{ marginBottom: "20px" }}>
+                      <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "5px", fontSize: "12px" }}>
+                        <tbody>
+                          <tr>
+                            <td style={{ padding: "4px", borderBottom: "1px solid #eee", fontWeight: "bold", width: "35%" }}>Transaction ID:</td>
+                            <td style={{ padding: "4px", borderBottom: "1px solid #eee" }}>{selectedTicket.transactionId}</td>
+                          </tr>
+                          <tr>
+                            <td style={{ padding: "4px", borderBottom: "1px solid #eee", fontWeight: "bold" }}>Ticket No:</td>
+                            <td style={{ padding: "4px", borderBottom: "1px solid #eee" }}>{selectedTicket.ticketNo}</td>
+                          </tr>
+                          <tr>
+                            <td style={{ padding: "4px", borderBottom: "1px solid #eee", fontWeight: "bold" }}>Event:</td>
+                            <td style={{ padding: "4px", borderBottom: "1px solid #eee" }}>{selectedTicket.eventName}</td>
+                          </tr>
+                          <tr>
+                            <td style={{ padding: "4px", borderBottom: "1px solid #eee", fontWeight: "bold" }}>Location:</td>
+                            <td style={{ padding: "4px", borderBottom: "1px solid #eee" }}>{selectedTicket.location}</td>
+                          </tr>
+                          <tr>
+                            <td style={{ padding: "4px", borderBottom: "1px solid #eee", fontWeight: "bold" }}>Vendor:</td>
+                            <td style={{ padding: "4px", borderBottom: "1px solid #eee" }}>{selectedTicket.vendor}</td>
+                          </tr>
+                          <tr>
+                            <td style={{ padding: "4px", borderBottom: "1px solid #eee", fontWeight: "bold" }}>Customer:</td>
+                            <td style={{ padding: "4px", borderBottom: "1px solid #eee" }}>{selectedTicket.customer}</td>
+                          </tr>
+                          <tr>
+                            <td style={{ padding: "4px", borderBottom: "1px solid #eee", fontWeight: "bold" }}>Price:</td>
+                            <td style={{ padding: "4px", borderBottom: "1px solid #eee" }}>${selectedTicket.ticketPrice}</td>
+                          </tr>
+                          <tr>
+                            <td style={{ padding: "4px", borderBottom: "1px solid #eee", fontWeight: "bold" }}>Date:</td>
+                            <td style={{ padding: "4px", borderBottom: "1px solid #eee" }}>
+                              {format(new Date(selectedTicket.timestamp), "MMM dd, yyyy HH:mm")}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
                   </div>
-                  {/* QR Code at the bottom, only after animation */}
-                  {showQr && (
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        marginBottom: 0,
-                        marginTop: 0,
-                      }}
-                    >
-                      <img
-                        src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(
-                          JSON.stringify({
-                            transactionId: selectedTicket.transactionId,
-                            ticketNo: selectedTicket.ticketNo,
-                            eventName: selectedTicket.eventName,
-                            location: selectedTicket.location,
-                            vendor: selectedTicket.vendor,
-                            customer: selectedTicket.customer,
-                            price: selectedTicket.ticketPrice,
-                            date: format(
-                              new Date(selectedTicket.timestamp),
-                              "MMM dd, yyyy HH:mm"
-                            ),
-                          })
-                        )}&size=96x96`}
-                        alt="QR Code"
-                        style={{
-                          background: "#fff",
-                          padding: 4,
-                          borderRadius: 8,
-                          marginLeft: 270,
-                          marginTop: 55,
-                        }}
-                      />
-                    </div>
-                  )}
+                  {/* QR Code removed from bottom and moved to top */}
                   <div className="jagged-edge"></div>
                 </div>
               </div>
@@ -325,26 +458,29 @@ document.head.insertAdjacentHTML(
 
   .paper-cont {
     position: relative;
-    overflow: hidden;
-    height: 467px;
+    overflow: visible;
+    height: auto;
+    min-height: 467px;
   }
 
   .paper {
     background: #ffffff;
     font-family: 'Poppins', sans-serif;
-    height: 447px;
-    position: absolute;
+    min-height: 447px;
+    height: auto;
+    position: relative;
     z-index: 2;
     margin: 0 12px;
     margin-top: -12px;
     animation: print 5000ms cubic-bezier(0.68, -0.55, 0.265, 0.9) 1;
     -moz-animation: print 5000ms cubic-bezier(0.68, -0.55, 0.265, 0.9) 1;
     width: 95%;
+    padding-bottom: 30px;
   }
 
   .main-contents {
-    margin: 0 12px;
-    padding: 24px;
+    margin: 0 8px;
+    padding: 12px;
   }
 
   .jagged-edge {
@@ -377,13 +513,13 @@ document.head.insertAdjacentHTML(
 
   .success-icon {
     text-align: center;
-    font-size: 48px;
-    height: 72px;
+    font-size: 36px;
+    height: 50px;
     background: #359d00;
     border-radius: 50%;
-    width: 72px;
-    height: 72px;
-    margin: 16px auto;
+    width: 50px;
+    height: 50px;
+    margin: 10px auto;
     color: #fff;
     display: flex;
     align-items: center;
@@ -391,19 +527,19 @@ document.head.insertAdjacentHTML(
   }
 
   .success-title {
-    font-size: 22px;
+    font-size: 18px;
     text-align: center;
     color: #666;
     font-weight: bold;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
   }
 
   .success-description {
-    font-size: 15px;
-    line-height: 21px;
+    font-size: 12px;
+    line-height: 16px;
     color: #333;
     text-align: left;
-    margin-bottom: 24px;
+    margin-bottom: 12px;
   }
 
   .success-description p {
