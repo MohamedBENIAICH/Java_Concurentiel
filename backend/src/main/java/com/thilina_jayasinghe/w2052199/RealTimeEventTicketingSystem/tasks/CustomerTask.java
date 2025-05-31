@@ -32,19 +32,20 @@ public class CustomerTask implements Runnable {
     @Override
     public void run() {
         try {
-            while ((ticketPool.getUnsoldTickets().get() != 0) && (purchaseQuantity>0)) {
-                Ticket ticket = ticketPool.removeTicket(customer.getCustomerName(), getUniqueTimestamp());
+            while ((ticketPool.getUnsoldTickets().get() != 0) && (purchaseQuantity > 0)) {
+                Ticket ticket = ticketPool.removeTicket(customer, getUniqueTimestamp());
                 purchaseQuantity--;
                 if (ticket == null) {
                     break;
                 }
                 ticketService.saveTicket(ticket);
-                Thread.sleep((long) (retrievalInterval*1000));
+                Thread.sleep((long) (retrievalInterval * 1000));
             }
         } catch (InterruptedException e) {
             System.out.println(e.getMessage());
         }
     }
+
 
     /**
      * Generates a unique timestamp to be recorded at ticket purchase

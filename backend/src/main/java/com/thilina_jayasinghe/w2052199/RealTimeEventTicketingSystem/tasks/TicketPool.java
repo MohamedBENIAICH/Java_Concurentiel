@@ -1,5 +1,6 @@
 package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.tasks;
 
+import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.model.Customer;
 import com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.model.Ticket;
 
 import java.sql.Timestamp;
@@ -57,7 +58,7 @@ public class TicketPool {
         }
     }
 
-    protected Ticket removeTicket(String customerName, LocalDateTime timestamp) {
+    protected Ticket removeTicket(Customer customerName, LocalDateTime timestamp) {
         try {
             reentrantLock.lock();
             condition.signalAll();

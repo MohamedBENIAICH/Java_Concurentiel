@@ -10,6 +10,26 @@ const api = axios.create({
   },
 });
 
+// Add response interceptor for logging
+api.interceptors.response.use(
+  (response) => {
+    // Log the API endpoint and response data
+    console.group(`API Response: ${response.config.method?.toUpperCase()} ${response.config.url}`);
+    console.log('Status:', response.status);
+    console.log('Data:', response.data);
+    console.groupEnd();
+    return response;
+  },
+  (error) => {
+    // Log any API errors
+    console.group(`API Error: ${error.config?.method?.toUpperCase()} ${error.config?.url}`);
+    console.error('Status:', error.response?.status);
+    console.error('Error:', error.response?.data || error.message);
+    console.groupEnd();
+    return Promise.reject(error);
+  }
+);
+
 // Task Manager API
 export const startThreads = () => api.post('/start');
 export const stopThreads = () => api.post('/stop');
@@ -28,9 +48,24 @@ export const saveCustomer = (customer: Customer) => api.post('/save/customer', c
 export const deleteCustomer = (customerId: number) => api.delete(`/delete/customer/${customerId}`);
 export const deleteAllCustomers = () => api.delete('/delete/customer');
 
+// Add a function to get customer name by ID
+export const getCustomerName = async (customerId: number): Promise<string> => {
+  try {
+    const response = await getCustomer(customerId);
+    return response.data.customerName;
+  } catch (error) {
+    console.error('Error fetching customer name:', error);
+    return 'Unknown Customer';
+  }
+};
+
 // Ticket API
 export const getTickets = () => api.get('/get/tickets');
 export const saveTicket = (ticket: Ticket) => api.post('/save/ticket', { params: { ticket } });
+export const sendTicketToCustomer = (transactionId: number, customerId: number) => 
+  api.post(`/send/ticket/${transactionId}/customer/${customerId}`);
+export const sendAllTicketsToCustomer = (customerId: number) => 
+  api.post(`/send/tickets/customer/${customerId}`);
 
 // Configuration API
 export const getConfiguration = () => api.get('/get/config');

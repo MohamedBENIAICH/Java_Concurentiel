@@ -1,32 +1,97 @@
 import React, { useState, useEffect } from "react";
-import { useQuery } from "react-query";
-import { Ticket as TicketIcon, Download, Eye } from "lucide-react";
+import { useQuery, useMutation } from "react-query";
+import { Ticket as TicketIcon, Download, Eye, Mail, MailPlus } from "lucide-react";
 import { format } from "date-fns";
 import { Table } from "../components/ui/Table";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
-import { getTickets } from "../api";
+import { getTickets, sendTicketToCustomer, sendAllTicketsToCustomer, getCustomerName } from "../api";
 import { Ticket } from "../types";
 import html2pdf from "html2pdf.js";
 import { QRCodeSVG } from "qrcode.react";
 import ReactDOM from "react-dom";
+import { toast } from "react-toastify";
 
 export const TicketList: React.FC = () => {
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [showQr, setShowQr] = useState(false);
+  const [customerNames, setCustomerNames] = useState<Record<number, string>>({});
 
   const { data: tickets = [], isLoading } = useQuery("tickets", async () => {
     const response = await getTickets();
+    console.log("Tickets data structure:", response.data[0]);
     return response.data;
   });
 
+  // Extract customer ID from customer string
+  const extractCustomerId = (customer: string | undefined): number | undefined => {
+    if (!customer) return undefined;
+    if (customer.startsWith("Customer ")) {
+      const id = parseInt(customer.split(" ")[1]);
+      return isNaN(id) ? undefined : id;
+    }
+    return undefined;
+  };
+
+  // Fetch customer names when tickets change
+  useEffect(() => {
+    const fetchCustomerNames = async () => {
+      const names: Record<number, string> = {};
+      
+      // Process each ticket
+      for (const ticket of tickets) {
+        const customerId = ticket.customerId || extractCustomerId(ticket.customer);
+        if (customerId && !names[customerId]) {
+          try {
+            const name = await getCustomerName(customerId);
+            names[customerId] = name;
+          } catch (error) {
+            console.error(`Error fetching customer ${customerId}:`, error);
+            names[customerId] = 'Unknown Customer';
+          }
+        }
+      }
+      
+      setCustomerNames(names);
+    };
+
+    if (tickets.length > 0) {
+      fetchCustomerNames();
+    }
+  }, [tickets]);
+
+  const sendTicketMutation = useMutation(
+    ({ transactionId, customerId }: { transactionId: number; customerId: number }) =>
+      sendTicketToCustomer(transactionId, customerId),
+    {
+      onSuccess: () => {
+        toast.success("Ticket sent successfully");
+      },
+      onError: () => {
+        toast.error("Failed to send ticket");
+      },
+    }
+  );
+
+  const sendAllTicketsMutation = useMutation(
+    (customerId: number) => sendAllTicketsToCustomer(customerId),
+    {
+      onSuccess: () => {
+        toast.success("All tickets sent successfully");
+      },
+      onError: () => {
+        toast.error("Failed to send tickets");
+      },
+    }
+  );
+
   // Show QR code after animation
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: ReturnType<typeof setTimeout>;
     if (showModal) {
       setShowQr(false);
-      timer = setTimeout(() => setShowQr(true), 1000); // reduced from 5000ms to 1000ms
+      timer = setTimeout(() => setShowQr(true), 1000);
     }
     return () => clearTimeout(timer);
   }, [showModal, selectedTicket]);
@@ -44,7 +109,7 @@ export const TicketList: React.FC = () => {
       "Price",
       "Timestamp",
     ];
-    const csvData = tickets.map((ticket) => [
+    const csvData = tickets.map((ticket: Ticket) => [
       ticket.transactionId,
       ticket.ticketNo,
       ticket.vendor,
@@ -57,7 +122,7 @@ export const TicketList: React.FC = () => {
 
     const csvContent = [
       headers.join(","),
-      ...csvData.map((row) => row.join(",")),
+      ...csvData.map((row: (string | number | undefined)[]) => row.join(",")),
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -205,12 +270,47 @@ export const TicketList: React.FC = () => {
     }, 500); // Attendre 500ms pour s'assurer que le QR code est rendu
   };
 
+  const handleSendTicket = (ticket: Ticket) => {
+    if (!ticket.transactionId) {
+      toast.error("Invalid transaction ID");
+      return;
+    }
+
+    const customerId = ticket.customerId || extractCustomerId(ticket.customer);
+    if (!customerId) {
+      toast.error("No customer associated with this ticket");
+      return;
+    }
+
+    sendTicketMutation.mutate({ 
+      transactionId: ticket.transactionId, 
+      customerId: customerId 
+    });
+  };
+
+  const handleSendAllTickets = (ticket: Ticket) => {
+    const customerId = ticket.customerId || extractCustomerId(ticket.customer);
+    if (!customerId) {
+      toast.error("No customer associated with this ticket");
+      return;
+    }
+
+    sendAllTicketsMutation.mutate(customerId);
+  };
+
   const columns = [
-    { header: "Ticket No", accessor: "ticketNo" },
-    { header: "Vendor", accessor: "vendor" },
-    { header: "Event", accessor: "eventName" },
-    { header: "Location", accessor: "location" },
-    { header: "Customer", accessor: "customer" },
+    { header: "Ticket No", accessor: (ticket: Ticket) => ticket.ticketNo },
+    { header: "Vendor", accessor: (ticket: Ticket) => ticket.vendor },
+    { header: "Event", accessor: (ticket: Ticket) => ticket.eventName },
+    { header: "Location", accessor: (ticket: Ticket) => ticket.location },
+    { 
+      header: "Customer", 
+      accessor: (ticket: Ticket) => {
+        const customerId = ticket.customerId || extractCustomerId(ticket.customer);
+        if (!customerId) return "No customer";
+        return customerNames[customerId] || "Loading...";
+      }
+    },
     { header: "Price", accessor: (ticket: Ticket) => `$${ticket.ticketPrice}` },
     {
       header: "Timestamp",
@@ -219,20 +319,59 @@ export const TicketList: React.FC = () => {
     },
     {
       header: "Actions",
-      accessor: (ticket: Ticket) => (
-        <button
-          onClick={() => viewTicket(ticket)}
-          className="text-blue-600 hover:text-blue-800 focus:outline-none"
-          title="View Ticket"
-        >
-          <Eye className="h-5 w-5" />
-        </button>
-      ),
+      accessor: (ticket: Ticket) => {
+        const customerId = ticket.customerId || extractCustomerId(ticket.customer);
+        const hasCustomer = !!customerId;
+
+        return (
+          <div className="flex space-x-2">
+            <button
+              onClick={() => viewTicket(ticket)}
+              className="text-blue-600 hover:text-blue-800 focus:outline-none"
+              title="View Ticket"
+            >
+              <Eye className="h-5 w-5" />
+            </button>
+            <button
+              onClick={() => handleSendTicket(ticket)}
+              className={hasCustomer ? "text-green-600 hover:text-green-800 focus:outline-none" : "text-gray-400 cursor-not-allowed focus:outline-none"}
+              title={hasCustomer ? "Send Ticket" : "No customer associated with this ticket"}
+              disabled={!hasCustomer}
+            >
+              <Mail className="h-5 w-5" />
+            </button>
+            <button
+              onClick={() => handleSendAllTickets(ticket)}
+              className={hasCustomer ? "text-purple-600 hover:text-purple-800 focus:outline-none" : "text-gray-400 cursor-not-allowed focus:outline-none"}
+              title={hasCustomer ? "Send All Customer Tickets" : "No customer associated with this ticket"}
+              disabled={!hasCustomer}
+            >
+              <MailPlus className="h-5 w-5" />
+            </button>
+          </div>
+        );
+      },
     },
   ];
 
   return (
     <div className="space-y-6">
+      {/* Add info message about ticket sending */}
+      {/* <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+        <div className="flex">
+          <div className="flex-shrink-0">
+            <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <div className="ml-3">
+            <p className="text-sm text-yellow-700">
+              L'envoi de tickets par email n'est pas disponible car les tickets n'ont pas de client associé dans le système.
+            </p>
+          </div>
+        </div>
+      </div> */}
+
       {/* Ticket View Modal */}
       {showModal && selectedTicket && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -390,14 +529,14 @@ export const TicketList: React.FC = () => {
                 <div className="text-3xl font-bold">
                   $
                   {tickets
-                    .reduce((sum, ticket) => sum + ticket.ticketPrice, 0)
+                    .reduce((sum: number, ticket: Ticket) => sum + ticket.ticketPrice, 0)
                     .toFixed(2)}
                 </div>
                 <div className="ml-2 text-sm">Total Revenue</div>
               </div>
               <div className="bg-blue-100 text-blue-800 p-3 rounded-md flex items-center mt-2 md:mt-0">
                 <div className="text-3xl font-bold">
-                  {new Set(tickets.map((ticket) => ticket.customer)).size}
+                  {new Set(tickets.map((ticket: Ticket) => ticket.customer)).size}
                 </div>
                 <div className="ml-2 text-sm">Unique Customers</div>
               </div>

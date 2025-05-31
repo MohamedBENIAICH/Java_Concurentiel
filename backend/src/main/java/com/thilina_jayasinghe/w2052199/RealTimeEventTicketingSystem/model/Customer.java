@@ -1,6 +1,9 @@
 package com.thilina_jayasinghe.w2052199.RealTimeEventTicketingSystem.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "customer")
@@ -62,4 +65,8 @@ public class Customer {
     public void setPurchaseQuantity(int purchaseQuantity) {
         this.purchaseQuantity = purchaseQuantity;
     }
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Ticket> tickets;
+
 }

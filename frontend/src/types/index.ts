@@ -25,6 +25,7 @@ export interface Ticket {
   vendor: string;
   eventName: string;
   location: string;
+  customerId?: number;
   customer: string;
   ticketPrice: number;
   timestamp: string;
