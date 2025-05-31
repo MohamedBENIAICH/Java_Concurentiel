@@ -1,26 +1,47 @@
-import React, { useState } from 'react';
-import { useQuery } from 'react-query';
-import { Ticket as TicketIcon, Download, Eye } from 'lucide-react';
-import { format } from 'date-fns';
-import { Table } from '../components/ui/Table';
-import { Button } from '../components/ui/Button';
-import { Card } from '../components/ui/Card';
-import { getTickets } from '../api';
-import { Ticket } from '../types';
+import React, { useState, useEffect } from "react";
+import { useQuery } from "react-query";
+import { Ticket as TicketIcon, Download, Eye } from "lucide-react";
+import { format } from "date-fns";
+import { Table } from "../components/ui/Table";
+import { Button } from "../components/ui/Button";
+import { Card } from "../components/ui/Card";
+import { getTickets } from "../api";
+import { Ticket } from "../types";
+import html2pdf from "html2pdf.js";
 
 export const TicketList: React.FC = () => {
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [showQr, setShowQr] = useState(false);
 
-  const { data: tickets = [], isLoading } = useQuery('tickets', async () => {
+  const { data: tickets = [], isLoading } = useQuery("tickets", async () => {
     const response = await getTickets();
     return response.data;
   });
 
+  // Show QR code after animation
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (showModal) {
+      setShowQr(false);
+      timer = setTimeout(() => setShowQr(true), 5000); // match animation duration
+    }
+    return () => clearTimeout(timer);
+  }, [showModal, selectedTicket]);
+
   const exportToCSV = () => {
     if (tickets.length === 0) return;
 
-    const headers = ['Transaction ID', 'Ticket No', 'Vendor', 'Event', 'Location', 'Customer', 'Price', 'Timestamp'];
+    const headers = [
+      "Transaction ID",
+      "Ticket No",
+      "Vendor",
+      "Event",
+      "Location",
+      "Customer",
+      "Price",
+      "Timestamp",
+    ];
     const csvData = tickets.map((ticket) => [
       ticket.transactionId,
       ticket.ticketNo,
@@ -33,15 +54,18 @@ export const TicketList: React.FC = () => {
     ]);
 
     const csvContent = [
-      headers.join(','),
-      ...csvData.map((row) => row.join(',')),
-    ].join('\n');
+      headers.join(","),
+      ...csvData.map((row) => row.join(",")),
+    ].join("\n");
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-    link.setAttribute('download', `tickets_export_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute(
+      "download",
+      `tickets_export_${new Date().toISOString().split("T")[0]}.csv`
+    );
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -56,29 +80,37 @@ export const TicketList: React.FC = () => {
     setShowModal(false);
   };
 
+  const downloadTicketAsPDF = () => {
+    const element = document.getElementById("ticket-pdf-content");
+    if (element) {
+      html2pdf().from(element).save(`ticket_${selectedTicket?.ticketNo}.pdf`);
+    }
+  };
+
   const columns = [
-    { header: 'Ticket No', accessor: 'ticketNo' },
-    { header: 'Vendor', accessor: 'vendor' },
-    { header: 'Event', accessor: 'eventName' },
-    { header: 'Location', accessor: 'location' },
-    { header: 'Customer', accessor: 'customer' },
-    { header: 'Price', accessor: (ticket: Ticket) => `$${ticket.ticketPrice}` },
-    { 
-      header: 'Timestamp', 
-      accessor: (ticket: Ticket) => format(new Date(ticket.timestamp), 'MMM dd, yyyy HH:mm') 
+    { header: "Ticket No", accessor: "ticketNo" },
+    { header: "Vendor", accessor: "vendor" },
+    { header: "Event", accessor: "eventName" },
+    { header: "Location", accessor: "location" },
+    { header: "Customer", accessor: "customer" },
+    { header: "Price", accessor: (ticket: Ticket) => `$${ticket.ticketPrice}` },
+    {
+      header: "Timestamp",
+      accessor: (ticket: Ticket) =>
+        format(new Date(ticket.timestamp), "MMM dd, yyyy HH:mm"),
     },
     {
-      header: 'Actions',
+      header: "Actions",
       accessor: (ticket: Ticket) => (
-        <button 
+        <button
           onClick={() => viewTicket(ticket)}
           className="text-blue-600 hover:text-blue-800 focus:outline-none"
           title="View Ticket"
         >
           <Eye className="h-5 w-5" />
         </button>
-      )
-    }
+      ),
+    },
   ];
 
   return (
@@ -89,37 +121,105 @@ export const TicketList: React.FC = () => {
           <div className="bg-white rounded-lg p-4 max-w-md w-full">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">Ticket Details</h2>
-              <button 
+              <button
                 onClick={closeModal}
                 className="text-gray-500 hover:text-gray-700 focus:outline-none"
               >
                 ×
               </button>
             </div>
-            
-            <div className="cont">
+            {/* Add Download Button */}
+            <div className="mb-4 flex justify-end">
+              <Button onClick={downloadTicketAsPDF} variant="outline">
+                Download as PDF
+              </Button>
+            </div>
+            {/* Add id to this container */}
+            <div className="cont" id="ticket-pdf-content">
               <div className="printer-top"></div>
-
               <div className="paper-cont">
                 <div className="printer-bottom"></div>
-
-                <div className="paper">
+                <div
+                  className="paper"
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    height: "447px",
+                  }}
+                >
                   <div className="main-contents">
                     <div className="success-icon">✓</div>
-                    <div className="success-title">
-                      Event Ticket
-                    </div>
+                    <div className="success-title">Event Ticket</div>
                     <div className="success-description">
-                      <p><strong>Transaction ID:</strong> {selectedTicket.transactionId}</p>
-                      <p><strong>Ticket No:</strong> {selectedTicket.ticketNo}</p>
-                      <p><strong>Event:</strong> {selectedTicket.eventName}</p>
-                      <p><strong>Location:</strong> {selectedTicket.location}</p>
-                      <p><strong>Vendor:</strong> {selectedTicket.vendor}</p>
-                      <p><strong>Customer:</strong> {selectedTicket.customer}</p>
-                      <p><strong>Price:</strong> ${selectedTicket.ticketPrice}</p>
-                      <p><strong>Date:</strong> {format(new Date(selectedTicket.timestamp), 'MMM dd, yyyy HH:mm')}</p>
+                      <p>
+                        <strong>Transaction ID:</strong>{" "}
+                        {selectedTicket.transactionId}
+                      </p>
+                      <p>
+                        <strong>Ticket No:</strong> {selectedTicket.ticketNo}
+                      </p>
+                      <p>
+                        <strong>Event:</strong> {selectedTicket.eventName}
+                      </p>
+                      <p>
+                        <strong>Location:</strong> {selectedTicket.location}
+                      </p>
+                      <p>
+                        <strong>Vendor:</strong> {selectedTicket.vendor}
+                      </p>
+                      <p>
+                        <strong>Customer:</strong> {selectedTicket.customer}
+                      </p>
+                      <p>
+                        <strong>Price:</strong> ${selectedTicket.ticketPrice}
+                      </p>
+                      <p>
+                        <strong>Date:</strong>{" "}
+                        {format(
+                          new Date(selectedTicket.timestamp),
+                          "MMM dd, yyyy HH:mm"
+                        )}
+                      </p>
                     </div>
                   </div>
+                  {/* QR Code at the bottom, only after animation */}
+                  {showQr && (
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        marginBottom: 0,
+                        marginTop: 0,
+                      }}
+                    >
+                      <img
+                        src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(
+                          JSON.stringify({
+                            transactionId: selectedTicket.transactionId,
+                            ticketNo: selectedTicket.ticketNo,
+                            eventName: selectedTicket.eventName,
+                            location: selectedTicket.location,
+                            vendor: selectedTicket.vendor,
+                            customer: selectedTicket.customer,
+                            price: selectedTicket.ticketPrice,
+                            date: format(
+                              new Date(selectedTicket.timestamp),
+                              "MMM dd, yyyy HH:mm"
+                            ),
+                          })
+                        )}&size=96x96`}
+                        alt="QR Code"
+                        style={{
+                          background: "#fff",
+                          padding: 4,
+                          borderRadius: 8,
+                          marginLeft: 270,
+                          marginTop: 55,
+                        }}
+                      />
+                    </div>
+                  )}
                   <div className="jagged-edge"></div>
                 </div>
               </div>
@@ -143,28 +243,30 @@ export const TicketList: React.FC = () => {
       <Card className="mb-4">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center">
           <div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">Ticket Statistics</h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">
+              Ticket Statistics
+            </h3>
             <p className="text-gray-600">
-              Total Tickets: <span className="font-semibold">{tickets.length}</span>
+              Total Tickets:{" "}
+              <span className="font-semibold">{tickets.length}</span>
             </p>
           </div>
           <div className="mt-4 md:mt-0">
             <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
               <div className="bg-green-100 text-green-800 p-3 rounded-md flex items-center">
                 <div className="text-3xl font-bold">
-                  ${tickets.reduce((sum, ticket) => sum + ticket.ticketPrice, 0).toFixed(2)}
+                  $
+                  {tickets
+                    .reduce((sum, ticket) => sum + ticket.ticketPrice, 0)
+                    .toFixed(2)}
                 </div>
-                <div className="ml-2 text-sm">
-                  Total Revenue
-                </div>
+                <div className="ml-2 text-sm">Total Revenue</div>
               </div>
               <div className="bg-blue-100 text-blue-800 p-3 rounded-md flex items-center mt-2 md:mt-0">
                 <div className="text-3xl font-bold">
-                  {new Set(tickets.map(ticket => ticket.customer)).size}
+                  {new Set(tickets.map((ticket) => ticket.customer)).size}
                 </div>
-                <div className="ml-2 text-sm">
-                  Unique Customers
-                </div>
+                <div className="ml-2 text-sm">Unique Customers</div>
               </div>
             </div>
           </div>
@@ -183,7 +285,9 @@ export const TicketList: React.FC = () => {
         <div className="text-center py-12">
           <TicketIcon className="mx-auto h-12 w-12 text-gray-400" />
           <h3 className="mt-2 text-lg font-medium text-gray-900">No tickets</h3>
-          <p className="mt-1 text-gray-500">No ticket transactions have been recorded yet.</p>
+          <p className="mt-1 text-gray-500">
+            No ticket transactions have been recorded yet.
+          </p>
         </div>
       )}
     </div>
@@ -191,7 +295,9 @@ export const TicketList: React.FC = () => {
 };
 
 // CSS for the ticket printer animation
-document.head.insertAdjacentHTML('beforeend', `
+document.head.insertAdjacentHTML(
+  "beforeend",
+  `
 <style>
   .cont {
     max-width: 380px;
@@ -344,4 +450,5 @@ document.head.insertAdjacentHTML('beforeend', `
     }
   }
 </style>
-`);
+`
+);
