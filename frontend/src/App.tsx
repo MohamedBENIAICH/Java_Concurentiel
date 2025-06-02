@@ -10,6 +10,7 @@ import { VendorList } from './pages/VendorList';
 import { CustomerList } from './pages/CustomerList';
 import { TicketList } from './pages/TicketList';
 import { Settings } from './pages/Settings';
+import { ConcurrencyLogs } from './pages/ConcurrencyLogs';
 import { AppProvider } from './context/AppContext';
 
 const queryClient = new QueryClient({
@@ -34,7 +35,8 @@ function App() {
               <Route path="/customers" element={<CustomerList />} />
               <Route path="/tickets" element={<TicketList />} />
               <Route path="/settings" element={<Settings />} />
-              <Route path="*" element={<Navigate to="/\" replace />} />
+              <Route path="/concurrency-logs" element={<ConcurrencyLogs />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Layout>
         </BrowserRouter>

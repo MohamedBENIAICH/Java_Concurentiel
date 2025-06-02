@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { Card, StatCard } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
+import { useNavigate } from "react-router-dom";
 import { getVendors, getCustomers, getTickets, getConfiguration } from "../api";
 import { useAppContext } from "../context/AppContext";
 import {
@@ -92,30 +93,31 @@ export const Dashboard: React.FC = () => {
       .slice(-7); // Get the last 7 days
   }, [tickets]);
 
+  const navigate = useNavigate();
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          title="Total Vendors"
+          title="Nombre total de vendeurs"
           value={vendors.length}
           icon={<ShoppingBag size={24} />}
           className="border-l-4 border-blue-500"
         />
         <StatCard
-          title="Total Customers"
+          title="Nombre total de clients"
           value={customers.length}
           icon={<Users size={24} />}
           className="border-l-4 border-teal-500"
         />
         <StatCard
-          title="Total Tickets Sold"
+          title="Nombre total de billets vendus"
           value={tickets.length}
           icon={<Ticket size={24} />}
           className="border-l-4 border-purple-500"
         />
         <StatCard
-          title="System Status"
-          value={isSystemRunning ? "Running" : "Stopped"}
+          title="Statut du système"
+          value={isSystemRunning ? "En cours d'exécution" : "Arrêté"}
           icon={<Activity size={24} />}
           className={`border-l-4 ${
             isSystemRunning ? "border-green-500" : "border-red-500"
@@ -124,7 +126,7 @@ export const Dashboard: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <Card title="Revenue Overview" className="col-span-1">
+        <Card title="Aperçu des revenus" className="col-span-1">
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
@@ -134,58 +136,64 @@ export const Dashboard: React.FC = () => {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
                 <YAxis />
-                <Tooltip formatter={(value) => [`$${value}`, "Revenue"]} />
-                <Legend />
-                <Bar dataKey="revenue" fill="#1E3A8A" name="Revenue" />
+                <Tooltip formatter={(value) => [`${value} €`, "Revenu"]} />
+                <Legend formatter={() => "Revenu"} />
+                <Bar dataKey="revenue" fill="#1E3A8A" name="Revenu" />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </Card>
 
-        <Card title="Tickets by Vendor" className="col-span-1">
-          <div className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={vendorTicketData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({ name, percent }) =>
-                    `${name}: ${(percent * 100).toFixed(0)}%`
-                  }
-                >
-                  {vendorTicketData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(value) => [`${value} tickets`, "Count"]} />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
+        <Card title="Billets par vendeur" className="col-span-1">
+          <div className="flex flex-col space-y-2">
+            <div className="self-end mb-2">
+              <Button variant="outline" onClick={() => navigate('/concurrency-logs')}>
+                Visualiser
+              </Button>
+            </div>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={vendorTicketData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ name, percent }) =>
+                      `${name} : ${(percent * 100).toFixed(0)}%`
+                    }
+                  >
+                    {vendorTicketData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => [`${value} billets`, "Nombre"]} />
+                  <Legend formatter={() => "Nombre de billets"} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </Card>
-      </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <Card title="System Configuration" className="col-span-1">
+        <Card title="Configuration du système" className="col-span-1">
           {config ? (
             <div className="space-y-4">
               <div className="flex justify-between">
                 <span className="font-medium text-gray-700">
-                  Total Tickets:
+                  Nombre total de billets :
                 </span>
                 <span className="text-gray-900">{config.totalTickets}</span>
               </div>
               <div className="flex justify-between">
                 <span className="font-medium text-gray-700">
-                  Ticket Release Rate:
+                  Taux de distribution des billets :
                 </span>
                 <span className="text-gray-900">
                   {config.ticketReleaseRate}
@@ -193,7 +201,7 @@ export const Dashboard: React.FC = () => {
               </div>
               <div className="flex justify-between">
                 <span className="font-medium text-gray-700">
-                  Customer Retrieval Rate:
+                  Taux de récupération des clients :
                 </span>
                 <span className="text-gray-900">
                   {config.customerRetrievalRate}
@@ -201,7 +209,7 @@ export const Dashboard: React.FC = () => {
               </div>
               <div className="flex justify-between">
                 <span className="font-medium text-gray-700">
-                  Max Ticket Capacity:
+                  Capacité maximale de billets :
                 </span>
                 <span className="text-gray-900">
                   {config.maxTicketCapacity}
@@ -243,7 +251,7 @@ export const Dashboard: React.FC = () => {
                     </p>
                   </div>
                   <div className="text-sm font-medium text-gray-900">
-                    {ticket.ticketPrice} €
+                    {ticket.ticketPrice} €
                   </div>
                 </div>
               ))}
@@ -266,5 +274,6 @@ export const Dashboard: React.FC = () => {
         </Card>
       </div>
     </div>
+  </div>
   );
 };

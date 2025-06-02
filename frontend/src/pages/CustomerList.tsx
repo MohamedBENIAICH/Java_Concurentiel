@@ -24,10 +24,10 @@ export const CustomerList: React.FC = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries('customers');
-        toast.success('Customer deleted successfully');
+        toast.success('Client supprimé avec succès');
       },
       onError: () => {
-        toast.error('Failed to delete customer');
+        toast.error('Échec de la suppression du client');
       },
     }
   );
@@ -38,7 +38,7 @@ export const CustomerList: React.FC = () => {
   };
 
   const handleDelete = (customerId: number) => {
-    if (window.confirm('Are you sure you want to delete this customer?')) {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer ce client?')) {
       deleteMutation.mutate(customerId);
     }
   };

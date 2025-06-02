@@ -35,10 +35,10 @@ export const Settings: React.FC = () => {
     (data: Configuration) => saveConfiguration(data),
     {
       onSuccess: () => {
-        toast.success('Configuration saved successfully');
+        toast.success('Configuration enregistrée avec succès');
       },
       onError: () => {
-        toast.error('Failed to save configuration');
+        toast.error('Échec de l\'enregistrement de la configuration');
       },
     }
   );
@@ -47,10 +47,10 @@ export const Settings: React.FC = () => {
     () => deleteAllCustomers(),
     {
       onSuccess: () => {
-        toast.success('All customers have been deleted');
+        toast.success('Tous les clients ont été supprimés');
       },
       onError: () => {
-        toast.error('Failed to delete customers');
+        toast.error('Échec de la suppression des clients');
       },
     }
   );
@@ -59,19 +59,19 @@ export const Settings: React.FC = () => {
     const newErrors: Record<string, string> = {};
     
     if (formData.totalTickets <= 0) {
-      newErrors.totalTickets = 'Total tickets must be greater than 0';
+      newErrors.totalTickets = 'Le nombre total de billets doit être supérieur à 0';
     }
     
     if (formData.ticketReleaseRate <= 0) {
-      newErrors.ticketReleaseRate = 'Ticket release rate must be greater than 0';
+      newErrors.ticketReleaseRate = 'Le taux de distribution des billets doit être supérieur à 0';
     }
     
     if (formData.customerRetrievalRate <= 0) {
-      newErrors.customerRetrievalRate = 'Customer retrieval rate must be greater than 0';
+      newErrors.customerRetrievalRate = 'Le taux de récupération des clients doit être supérieur à 0';
     }
     
     if (formData.maxTicketCapacity <= 0) {
-      newErrors.maxTicketCapacity = 'Max ticket capacity must be greater than 0';
+      newErrors.maxTicketCapacity = 'La capacité maximale de billets doit être supérieure à 0';
     }
     
     setErrors(newErrors);
@@ -98,7 +98,7 @@ export const Settings: React.FC = () => {
   };
 
   const handleResetCustomers = () => {
-    if (window.confirm('Are you sure you want to delete all customers? This action cannot be undone.')) {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer tous les clients ? Cette action est irréversible.')) {
       resetCustomersMutation.mutate();
     }
   };
@@ -114,14 +114,14 @@ export const Settings: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">System Settings</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Paramètres du système</h1>
         <div className={`flex items-center px-3 py-1 rounded-full text-sm ${
           isSystemRunning ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
         }`}>
           <span className={`h-2 w-2 rounded-full mr-2 ${
             isSystemRunning ? 'bg-green-500' : 'bg-red-500'
           }`}></span>
-          System is {isSystemRunning ? 'Running' : 'Stopped'}
+          Système {isSystemRunning ? 'en cours d\'exécution' : 'arrêté'}
         </div>
       </div>
 
@@ -130,12 +130,12 @@ export const Settings: React.FC = () => {
           <div className="mb-6">
             <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
               <SettingsIcon className="mr-2 h-5 w-5" />
-              System Configuration
+              Configuration du système
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
-                label="Total Tickets"
+                label="Nombre total de billets"
                 name="totalTickets"
                 type="number"
                 value={formData.totalTickets}
@@ -146,7 +146,7 @@ export const Settings: React.FC = () => {
               />
               
               <Input
-                label="Ticket Release Rate"
+                label="Taux de distribution des billets"
                 name="ticketReleaseRate"
                 type="number"
                 step="0.01"
@@ -158,7 +158,7 @@ export const Settings: React.FC = () => {
               />
               
               <Input
-                label="Customer Retrieval Rate"
+                label="Taux de récupération des clients"
                 name="customerRetrievalRate"
                 type="number"
                 step="0.01"
@@ -170,7 +170,7 @@ export const Settings: React.FC = () => {
               />
               
               <Input
-                label="Max Ticket Capacity"
+                label="Capacité maximale de billets"
                 name="maxTicketCapacity"
                 type="number"
                 value={formData.maxTicketCapacity}
@@ -190,7 +190,7 @@ export const Settings: React.FC = () => {
               disabled={isSystemRunning}
             >
               <RotateCcw className="mr-2 h-4 w-4" />
-              Reset All Customers
+              Réinitialiser tous les clients
             </Button>
             
             <Button
@@ -199,7 +199,7 @@ export const Settings: React.FC = () => {
               disabled={isSystemRunning}
             >
               <Save className="mr-2 h-4 w-4" />
-              Save Configuration
+              Enregistrer la configuration
             </Button>
           </div>
         </form>
@@ -207,31 +207,31 @@ export const Settings: React.FC = () => {
         {isSystemRunning && (
           <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md text-yellow-800 text-sm">
             <p>
-              <strong>Note:</strong> System configuration cannot be modified while the system is running.
-              Please stop the system first to make changes.
+              <strong>Note :</strong> La configuration du système ne peut pas être modifiée tant que le système est en cours d'exécution.
+              Veuillez d'abord arrêter le système pour effectuer des modifications.
             </p>
           </div>
         )}
       </Card>
 
       <Card>
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">Help & Information</h2>
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">Aide & Informations</h2>
         <div className="space-y-4 text-gray-600">
           <div>
-            <h3 className="font-medium text-gray-800">Total Tickets</h3>
-            <p className="text-sm">The total number of tickets available in the system.</p>
+            <h3 className="font-medium text-gray-800">Nombre total de billets</h3>
+            <p className="text-sm">Le nombre total de billets disponibles dans le système.</p>
           </div>
           <div>
-            <h3 className="font-medium text-gray-800">Ticket Release Rate</h3>
-            <p className="text-sm">The rate at which tickets are released to vendors (tickets per second).</p>
+            <h3 className="font-medium text-gray-800">Taux de distribution des billets</h3>
+            <p className="text-sm">Le taux auquel les billets sont distribués aux vendeurs (billets par seconde).</p>
           </div>
           <div>
-            <h3 className="font-medium text-gray-800">Customer Retrieval Rate</h3>
-            <p className="text-sm">The rate at which customers attempt to purchase tickets (customers per second).</p>
+            <h3 className="font-medium text-gray-800">Taux de récupération des clients</h3>
+            <p className="text-sm">Le taux auquel les clients tentent d'acheter des billets (clients par seconde).</p>
           </div>
           <div>
-            <h3 className="font-medium text-gray-800">Max Ticket Capacity</h3>
-            <p className="text-sm">The maximum number of tickets that can be processed simultaneously.</p>
+            <h3 className="font-medium text-gray-800">Capacité maximale de billets</h3>
+            <p className="text-sm">Le nombre maximal de billets pouvant être traités simultanément.</p>
           </div>
         </div>
       </Card>

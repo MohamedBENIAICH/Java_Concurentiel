@@ -47,7 +47,7 @@ export const TicketList: React.FC = () => {
             const name = await getCustomerName(customerId);
             names[customerId] = name;
           } catch (error) {
-            console.error(`Error fetching customer ${customerId}:`, error);
+            console.error(`Erreur lors de la récupération du client ${customerId}:`, error);
             names[customerId] = 'Unknown Customer';
           }
         }
@@ -74,8 +74,8 @@ export const TicketList: React.FC = () => {
       
       pdfContent.innerHTML = `
         <div style="text-align: center; margin-bottom: 20px;">
-          <h1 style="color: #3b82f6; margin: 0; font-size: 24px;">Event Ticket</h1>
-          <p style="color: #64748b; margin: 5px 0 0 0;">Ticket #${ticket.ticketNo}</p>
+          <h1 style="color: #3b82f6; margin: 0; font-size: 24px;">Billet d'événement</h1>
+          <p style="color: #64748b; margin: 5px 0 0 0;">Billet n°${ticket.ticketNo}</p>
         </div>
         
         <div style="display: flex; justify-content: center; margin: 20px 0;">
@@ -85,48 +85,48 @@ export const TicketList: React.FC = () => {
         <table style="width: 100%; border-collapse: collapse; margin-top: 20px; border: 1px solid #e2e8f0;">
           <thead>
             <tr style="background-color: #f1f5f9;">
-              <th style="text-align: left; padding: 10px; border: 1px solid #e2e8f0; color: #1e3a8a;">Field</th>
-              <th style="text-align: left; padding: 10px; border: 1px solid #e2e8f0; color: #1e3a8a;">Value</th>
+              <th style="text-align: left; padding: 10px; border: 1px solid #e2e8f0; color: #1e3a8a;">Champ</th>
+              <th style="text-align: left; padding: 10px; border: 1px solid #e2e8f0; color: #1e3a8a;">Valeur</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Transaction ID</td>
+              <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">ID de transaction</td>
               <td style="padding: 10px; border: 1px solid #e2e8f0;">${ticket.transactionId}</td>
             </tr>
             <tr style="background-color: #f8fafc;">
-              <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Event</td>
+              <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Événement</td>
               <td style="padding: 10px; border: 1px solid #e2e8f0;">${ticket.eventName}</td>
             </tr>
             <tr>
-              <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Location</td>
+              <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Lieu</td>
               <td style="padding: 10px; border: 1px solid #e2e8f0;">${ticket.location}</td>
             </tr>
             <tr style="background-color: #f8fafc;">
-              <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Vendor</td>
+              <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Vendeur</td>
               <td style="padding: 10px; border: 1px solid #e2e8f0;">${ticket.vendor}</td>
             </tr>
             <tr>
-              <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Customer</td>
+              <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Client</td>
               <td style="padding: 10px; border: 1px solid #e2e8f0;">${customerName}</td>
             </tr>
             <tr style="background-color: #f8fafc;">
-              <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Price</td>
-              <td style="padding: 10px; border: 1px solid #e2e8f0;">$${ticket.ticketPrice}</td>
+              <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Prix</td>
+              <td style="padding: 10px; border: 1px solid #e2e8f0;">${ticket.ticketPrice} €</td>
             </tr>
             <tr>
               <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Date</td>
               <td style="padding: 10px; border: 1px solid #e2e8f0;">${format(
                 new Date(ticket.timestamp),
-                "MMM dd, yyyy HH:mm"
+                "dd/MM/yyyy HH:mm"
               )}</td>
             </tr>
           </tbody>
         </table>
         
         <div style="margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 15px; text-align: center;">
-          <p style="color: #64748b; font-size: 12px; margin: 5px 0;">Generated on ${format(new Date(), "MMM dd, yyyy HH:mm")}</p>
-          <p style="color: #64748b; font-size: 12px; margin: 5px 0;">Please present this ticket at the event entrance.</p>
+          <p style="color: #64748b; font-size: 12px; margin: 5px 0;">Généré le ${format(new Date(), "dd/MM/yyyy HH:mm")}</p>
+          <p style="color: #64748b; font-size: 12px; margin: 5px 0;">Veuillez présenter ce billet à l'entrée de l'événement.</p>
         </div>
       `;
       
@@ -279,14 +279,14 @@ export const TicketList: React.FC = () => {
     if (tickets.length === 0) return;
 
     const headers = [
-      "Transaction ID",
-      "Ticket No",
-      "Vendor",
-      "Event",
-      "Location",
-      "Customer",
-      "Price",
-      "Timestamp",
+      "ID de transaction",
+      "Numéro de billet",
+      "Vendeur",
+      "Événement",
+      "Lieu",
+      "Client",
+      "Prix",
+      "Date et Heure",
     ];
     const csvData = tickets.map((ticket: Ticket) => [
       ticket.transactionId,
@@ -294,8 +294,8 @@ export const TicketList: React.FC = () => {
       ticket.vendor,
       ticket.eventName,
       ticket.location,
-      ticket.customer,
-      ticket.ticketPrice,
+      (ticket.customerId && customerNames[ticket.customerId]) ? customerNames[ticket.customerId] : ticket.customer || "",
+      ticket.ticketPrice + " €",
       new Date(ticket.timestamp).toLocaleString(),
     ]);
 
@@ -354,8 +354,8 @@ export const TicketList: React.FC = () => {
     // Contenu simple mais bien formaté
     pdfContent.innerHTML = `
       <div style="text-align: center; margin-bottom: 20px;">
-        <h1 style="color: #3b82f6; margin: 0; font-size: 24px;">Event Ticket</h1>
-        <p style="color: #64748b; margin: 5px 0 0 0;">Ticket #${selectedTicket.ticketNo}</p>
+        <h1 style="color: #3b82f6; margin: 0; font-size: 24px;">Billet d'événement</h1>
+        <p style="color: #64748b; margin: 5px 0 0 0;">Billet n°${selectedTicket.ticketNo}</p>
       </div>
       
       <div style="display: flex; justify-content: center; margin: 20px 0;">
@@ -365,48 +365,52 @@ export const TicketList: React.FC = () => {
       <table style="width: 100%; border-collapse: collapse; margin-top: 20px; border: 1px solid #e2e8f0;">
         <thead>
           <tr style="background-color: #f1f5f9;">
-            <th style="text-align: left; padding: 10px; border: 1px solid #e2e8f0; color: #1e3a8a;">Field</th>
-            <th style="text-align: left; padding: 10px; border: 1px solid #e2e8f0; color: #1e3a8a;">Value</th>
+            <th style="text-align: left; padding: 10px; border: 1px solid #e2e8f0; color: #1e3a8a;">Champ</th>
+            <th style="text-align: left; padding: 10px; border: 1px solid #e2e8f0; color: #1e3a8a;">Valeur</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Transaction ID</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">ID de transaction :</td>
             <td style="padding: 10px; border: 1px solid #e2e8f0;">${selectedTicket.transactionId}</td>
           </tr>
-          <tr style="background-color: #f8fafc;">
-            <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Event</td>
-            <td style="padding: 10px; border: 1px solid #e2e8f0;">${selectedTicket.eventName}</td>
+          <tr>
+            <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold" style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold">Billet n° :</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0">${selectedTicket.ticketNo}</td>
           </tr>
           <tr>
-            <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Location</td>
-            <td style="padding: 10px; border: 1px solid #e2e8f0;">${selectedTicket.location}</td>
-          </tr>
-          <tr style="background-color: #f8fafc;">
-            <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Vendor</td>
-            <td style="padding: 10px; border: 1px solid #e2e8f0;">${selectedTicket.vendor}</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold">Événement :</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0">${selectedTicket.eventName}</td>
           </tr>
           <tr>
-            <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Customer</td>
-            <td style="padding: 10px; border: 1px solid #e2e8f0;">${customerName}</td>
-          </tr>
-          <tr style="background-color: #f8fafc;">
-            <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Price</td>
-            <td style="padding: 10px; border: 1px solid #e2e8f0;">$${selectedTicket.ticketPrice}</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold">Lieu :</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0">${selectedTicket.location}</td>
           </tr>
           <tr>
-            <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #475569;">Date</td>
-            <td style="padding: 10px; border: 1px solid #e2e8f0;">${format(
+            <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold">Vendeur :</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0">${selectedTicket.vendor}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold">Client :</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0">${customerName}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold">Prix :</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0">${selectedTicket.ticketPrice} €</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold">Date :</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0">${format(
               new Date(selectedTicket.timestamp),
-              "MMM dd, yyyy HH:mm"
+              "dd/MM/yyyy HH:mm"
             )}</td>
           </tr>
         </tbody>
       </table>
       
       <div style="margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 15px; text-align: center;">
-        <p style="color: #64748b; font-size: 12px; margin: 5px 0;">Generated on ${format(new Date(), "MMM dd, yyyy HH:mm")}</p>
-        <p style="color: #64748b; font-size: 12px; margin: 5px 0;">Please present this ticket at the event entrance.</p>
+        <p style="color: #64748b; font-size: 12px; margin: 5px 0;">Généré le ${format(new Date(), "dd/MM/yyyy HH:mm")}</p>
+        <p style="color: #64748b; font-size: 12px; margin: 5px 0;">Veuillez présenter ce billet à l'entrée de l'événement.</p>
       </div>
     `;
     
@@ -465,23 +469,23 @@ export const TicketList: React.FC = () => {
   };
 
   const columns = [
-    { header: "Ticket No", accessor: (ticket: Ticket) => ticket.ticketNo },
-    { header: "Vendor", accessor: (ticket: Ticket) => ticket.vendor },
-    { header: "Event", accessor: (ticket: Ticket) => ticket.eventName },
-    { header: "Location", accessor: (ticket: Ticket) => ticket.location },
+    { header: "Numéro de billet", accessor: (ticket: Ticket) => ticket.ticketNo },
+    { header: "Vendeur", accessor: (ticket: Ticket) => ticket.vendor },
+    { header: "Événement", accessor: (ticket: Ticket) => ticket.eventName },
+    { header: "Lieu", accessor: (ticket: Ticket) => ticket.location },
     { 
-      header: "Customer", 
+      header: "Client", 
       accessor: (ticket: Ticket) => {
         const customerId = ticket.customerId || extractCustomerId(ticket.customer);
-        if (!customerId) return "No customer";
-        return customerNames[customerId] || "Loading...";
+        if (!customerId) return "Aucun client";
+        return customerNames[customerId] || "Chargement...";
       }
     },
-    { header: "Price", accessor: (ticket: Ticket) => `$${ticket.ticketPrice}` },
+    { header: "Prix", accessor: (ticket: Ticket) => `${ticket.ticketPrice} €` },
     {
-      header: "Timestamp",
+      header: "Horodatage",
       accessor: (ticket: Ticket) =>
-        format(new Date(ticket.timestamp), "MMM dd, yyyy HH:mm"),
+        format(new Date(ticket.timestamp), "dd/MM/yyyy HH:mm"),
     },
     {
       header: "Actions",
@@ -494,14 +498,14 @@ export const TicketList: React.FC = () => {
             <button
               onClick={() => viewTicket(ticket)}
               className="text-blue-600 hover:text-blue-800 focus:outline-none"
-              title="View Ticket"
+              title="Voir le billet"
             >
               <Eye className="h-5 w-5" />
             </button>
             <button
               onClick={() => handleSendTicket(ticket)}
               className={hasCustomer ? "text-green-600 hover:text-green-800 focus:outline-none" : "text-gray-400 cursor-not-allowed focus:outline-none"}
-              title={hasCustomer ? "Send Ticket" : "No customer associated with this ticket"}
+              title={hasCustomer ? "Envoyer le billet" : "Aucun client associé à ce billet"}
               disabled={!hasCustomer}
             >
               <Mail className="h-5 w-5" />
@@ -509,7 +513,7 @@ export const TicketList: React.FC = () => {
             <button
               onClick={() => handleSendAllTickets(ticket)}
               className={hasCustomer ? "text-purple-600 hover:text-purple-800 focus:outline-none" : "text-gray-400 cursor-not-allowed focus:outline-none"}
-              title={hasCustomer ? "Send All Customer Tickets" : "No customer associated with this ticket"}
+              title={hasCustomer ? "Envoyer tous les billets du client" : "Aucun client associé à ce billet"}
               disabled={!hasCustomer}
             >
               <MailPlus className="h-5 w-5" />
@@ -543,7 +547,7 @@ export const TicketList: React.FC = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-3 max-w-sm w-full">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">Ticket Details</h2>
+              <h2 className="text-xl font-bold">Détails du billet</h2>
               <button
                 onClick={closeModal}
                 className="text-gray-500 hover:text-gray-700 focus:outline-none"
@@ -554,7 +558,7 @@ export const TicketList: React.FC = () => {
             {/* Add Download Button */}
             <div className="mb-2 flex justify-end">
               <Button onClick={downloadTicketAsPDF} variant="outline" className="text-sm py-1 px-2">
-                Download as PDF
+                Télécharger en PDF
               </Button>
             </div>
             {/* Add id to this container */}
@@ -575,7 +579,7 @@ export const TicketList: React.FC = () => {
                 >
                   <div className="main-contents">
                     <div className="success-icon" style={{ width: "50px", height: "50px", fontSize: "24px", margin: "10px auto" }}>✓</div>
-                    <div className="success-title" style={{ fontSize: "18px", marginBottom: "5px" }}>Event Ticket</div>
+                    <div className="success-title" style={{ fontSize: "18px", marginBottom: "5px" }}>Billet d'événement</div>
                     
                     {/* QR Code at the top, only after animation */}
                     {showQr && (
@@ -620,37 +624,37 @@ export const TicketList: React.FC = () => {
                       <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "5px", fontSize: "12px" }}>
                         <tbody>
                           <tr>
-                            <td style={{ padding: "4px", borderBottom: "1px solid #eee", fontWeight: "bold", width: "35%" }}>Transaction ID:</td>
+                            <td style={{ padding: "4px", borderBottom: "1px solid #eee", fontWeight: "bold", width: "35%" }}>ID de transaction :</td>
                             <td style={{ padding: "4px", borderBottom: "1px solid #eee" }}>{selectedTicket.transactionId}</td>
                           </tr>
                           <tr>
-                            <td style={{ padding: "4px", borderBottom: "1px solid #eee", fontWeight: "bold" }}>Ticket No:</td>
+                            <td style={{ padding: "4px", borderBottom: "1px solid #eee", fontWeight: "bold" }}>Billet n° :</td>
                             <td style={{ padding: "4px", borderBottom: "1px solid #eee" }}>{selectedTicket.ticketNo}</td>
                           </tr>
                           <tr>
-                            <td style={{ padding: "4px", borderBottom: "1px solid #eee", fontWeight: "bold" }}>Event:</td>
+                            <td style={{ padding: "4px", borderBottom: "1px solid #eee", fontWeight: "bold" }}>Événement :</td>
                             <td style={{ padding: "4px", borderBottom: "1px solid #eee" }}>{selectedTicket.eventName}</td>
                           </tr>
                           <tr>
-                            <td style={{ padding: "4px", borderBottom: "1px solid #eee", fontWeight: "bold" }}>Location:</td>
+                            <td style={{ padding: "4px", borderBottom: "1px solid #eee", fontWeight: "bold" }}>Lieu :</td>
                             <td style={{ padding: "4px", borderBottom: "1px solid #eee" }}>{selectedTicket.location}</td>
                           </tr>
                           <tr>
-                            <td style={{ padding: "4px", borderBottom: "1px solid #eee", fontWeight: "bold" }}>Vendor:</td>
+                            <td style={{ padding: "4px", borderBottom: "1px solid #eee", fontWeight: "bold" }}>Vendeur :</td>
                             <td style={{ padding: "4px", borderBottom: "1px solid #eee" }}>{selectedTicket.vendor}</td>
                           </tr>
                           <tr>
-                            <td style={{ padding: "4px", borderBottom: "1px solid #eee", fontWeight: "bold" }}>Customer:</td>
+                            <td style={{ padding: "4px", borderBottom: "1px solid #eee", fontWeight: "bold" }}>Client :</td>
                             <td style={{ padding: "4px", borderBottom: "1px solid #eee" }}>{getCustomerDisplayName(selectedTicket)}</td>
                           </tr>
                           <tr>
-                            <td style={{ padding: "4px", borderBottom: "1px solid #eee", fontWeight: "bold" }}>Price:</td>
-                            <td style={{ padding: "4px", borderBottom: "1px solid #eee" }}>${selectedTicket.ticketPrice}</td>
+                            <td style={{ padding: "4px", borderBottom: "1px solid #eee", fontWeight: "bold" }}>Prix :</td>
+                            <td style={{ padding: "4px", borderBottom: "1px solid #eee" }}>{selectedTicket.ticketPrice} €</td>
                           </tr>
                           <tr>
-                            <td style={{ padding: "4px", borderBottom: "1px solid #eee", fontWeight: "bold" }}>Date:</td>
+                            <td style={{ padding: "4px", borderBottom: "1px solid #eee", fontWeight: "bold" }}>Date :</td>
                             <td style={{ padding: "4px", borderBottom: "1px solid #eee" }}>
-                              {format(new Date(selectedTicket.timestamp), "MMM dd, yyyy HH:mm")}
+                              {format(new Date(selectedTicket.timestamp), "dd/MM/yyyy HH:mm")}
                             </td>
                           </tr>
                         </tbody>
@@ -667,14 +671,14 @@ export const TicketList: React.FC = () => {
       )}
 
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Tickets</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Billets</h1>
         <Button
           variant="outline"
           onClick={exportToCSV}
           disabled={tickets.length === 0}
         >
           <Download className="mr-2 h-5 w-5" />
-          Export to CSV
+          Exporter en CSV
         </Button>
       </div>
 
@@ -682,10 +686,10 @@ export const TicketList: React.FC = () => {
         <div className="flex flex-col md:flex-row md:justify-between md:items-center">
           <div>
             <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              Ticket Statistics
+              Statistiques des billets
             </h3>
             <p className="text-gray-600">
-              Total Tickets:{" "}
+              Nombre total de billets :{" "}
               <span className="font-semibold">{tickets.length}</span>
             </p>
           </div>
@@ -693,18 +697,18 @@ export const TicketList: React.FC = () => {
             <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
               <div className="bg-green-100 text-green-800 p-3 rounded-md flex items-center">
                 <div className="text-3xl font-bold">
-                  $
+                  €
                   {tickets
                     .reduce((sum: number, ticket: Ticket) => sum + ticket.ticketPrice, 0)
                     .toFixed(2)}
                 </div>
-                <div className="ml-2 text-sm">Total Revenue</div>
+                <div className="ml-2 text-sm">Revenu total</div>
               </div>
               <div className="bg-blue-100 text-blue-800 p-3 rounded-md flex items-center mt-2 md:mt-0">
                 <div className="text-3xl font-bold">
                   {new Set(tickets.map((ticket: Ticket) => ticket.customer)).size}
                 </div>
-                <div className="ml-2 text-sm">Unique Customers</div>
+                <div className="ml-2 text-sm">Clients uniques</div>
               </div>
             </div>
           </div>
@@ -716,15 +720,15 @@ export const TicketList: React.FC = () => {
         data={tickets}
         keyExtractor={(ticket) => ticket.transactionId || 0}
         isLoading={isLoading}
-        emptyMessage="No tickets found."
+        emptyMessage="Aucun billet trouvé."
       />
 
       {tickets.length === 0 && !isLoading && (
         <div className="text-center py-12">
           <TicketIcon className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-lg font-medium text-gray-900">No tickets</h3>
+          <h3 className="mt-2 text-lg font-medium text-gray-900">Aucun billet</h3>
           <p className="mt-1 text-gray-500">
-            No ticket transactions have been recorded yet.
+            Aucune transaction de billet n'a encore été enregistrée.
           </p>
         </div>
       )}

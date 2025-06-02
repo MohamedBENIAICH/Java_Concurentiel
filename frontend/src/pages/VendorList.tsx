@@ -50,10 +50,10 @@ export const VendorList: React.FC = () => {
 
   const columns = [
     { header: 'ID', accessor: 'vendorId' },
-    { header: 'Name', accessor: 'vendorName' },
-    { header: 'Event', accessor: 'eventName' },
-    { header: 'Location', accessor: 'location' },
-    { header: 'Ticket Price', accessor: (vendor: Vendor) => `$${vendor.ticketPrice}` },
+    { header: 'Nom', accessor: 'vendorName' },
+    { header: 'Événement', accessor: 'eventName' },
+    { header: 'Lieu', accessor: 'location' },
+    { header: 'Prix du billet', accessor: (vendor: Vendor) => `${vendor.ticketPrice} €` },
     { header: 'Contact', accessor: (vendor: Vendor) => vendor.email },
     {
       header: 'Actions',
@@ -87,7 +87,7 @@ export const VendorList: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Vendors</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Vendeurs</h1>
         <Button
           onClick={() => {
             setSelectedVendor(null);
@@ -95,7 +95,7 @@ export const VendorList: React.FC = () => {
           }}
         >
           <PlusCircle className="mr-2 h-5 w-5" />
-          Add Vendor
+          Ajouter un vendeur
         </Button>
       </div>
 
@@ -113,15 +113,15 @@ export const VendorList: React.FC = () => {
         data={vendors}
         keyExtractor={(vendor) => vendor.vendorId || 0}
         isLoading={isLoading}
-        emptyMessage="No vendors found. Add your first vendor!"
+        emptyMessage="Aucun vendeur trouvé. Ajoutez votre premier vendeur !"
         onRowClick={handleEdit}
       />
 
       {vendors.length === 0 && !isLoading && !isFormOpen && (
         <div className="text-center py-12">
           <ShoppingBag className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-lg font-medium text-gray-900">No vendors</h3>
-          <p className="mt-1 text-gray-500">Get started by creating a new vendor.</p>
+          <h3 className="mt-2 text-lg font-medium text-gray-900">Aucun vendeur</h3>
+          <p className="mt-1 text-gray-500">Commencez par créer un nouveau vendeur.</p>
           <div className="mt-6">
             <Button
               onClick={() => {
@@ -130,7 +130,7 @@ export const VendorList: React.FC = () => {
               }}
             >
               <PlusCircle className="mr-2 h-5 w-5" />
-              Add Vendor
+              Ajouter un vendeur
             </Button>
           </div>
         </div>
