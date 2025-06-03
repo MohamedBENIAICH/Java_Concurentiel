@@ -1,176 +1,210 @@
-# Event Booking System
+# Système de Billetterie d'Événements en Temps Réel
 
-## A Real-Time Event Ticketing System with Advanced Producer-Consumer Implementation using Concurrent Programming
+## Un système de billetterie d'événements en temps réel avec une implémentation avancée du modèle Producteur-Consommateur utilisant la programmation concurrente en Java.
 
-This project features a Spring Boot backend, an Angular frontend, and MySQL as the database. The project aims to:
-1. Solve the producer-consumer problem
-2. Implement multi-threading and concurrency
-3. Utilize core Object-Oriented Programming and Design principles
-4. Consist of a command-line interface component and a web application that run separately
+Ce projet comprend un backend développé avec Spring Boot (Java), une interface utilisateur frontend développée avec React (TypeScript) et utilise MySQL comme base de données. Le projet vise à :
 
-## Tech Stack
-Backend: Spring Boot (Java)
-Frontend: React (TypeScript)
-Database: MySQL Workbench
+1.  Résoudre le problème classique du producteur-consommateur.
+2.  Mettre en œuvre le multi-threading et la concurrence.
+3.  Utiliser les principes fondamentaux de la programmation orientée objet et de la conception logicielle.
+4.  Fournir à la fois une interface en ligne de commande (CLI) et une application web, fonctionnant séparément.
 
-## IDE:
-Backend: IntelliJ IDEA Community Edition
-Frontend: Visual Studio Code
+## Technologies Utilisées
 
-## Prerequisites:
-Make sure you have an internet connection and the following installed:
+*   **Backend :** Spring Boot (Java)
+*   **Frontend :** React (TypeScript) avec Vite
+*   **Base de données :** MySQL (Workbench recommandé pour la gestion)
 
-Java (JDK 17 or later)
+## Environnements de Développement Recommandés
 
-Node.js (LTS version)
-bash
+*   **Backend :** IntelliJ IDEA (Community Edition ou Ultimate)
+*   **Frontend :** Visual Studio Code
 
-npm install
+## Prérequis
 
-MySQL Server and MySQL Workbench
+Assurez-vous de disposer d'une connexion Internet et d'avoir installé les éléments suivants sur votre système :
 
-Maven (comes with IntelliJ IDEA for Spring Boot projects)
+*   **Java :** JDK 17 ou une version ultérieure.
+*   **Node.js :** Version LTS (Long Term Support) recommandée. Inclut npm (Node Package Manager).
+*   **MySQL :** Serveur MySQL et un outil de gestion comme MySQL Workbench.
+*   **Maven :** Généralement inclus avec IntelliJ IDEA pour les projets Spring Boot, sinon installez-le séparément.
+*   **Git :** Pour cloner le dépôt.
+*   **IDE :** IntelliJ IDEA (version 2023.3.1 ou ultérieure recommandée) et Visual Studio Code.
 
-IntelliJ IDEA (version 2023.3.1 or later) 
+## Instructions d'Installation
 
-Visual Studio Code
+### 1. Cloner le Dépôt
 
-## Setup Instructions
+Ouvrez un terminal ou une invite de commande, naviguez jusqu'au répertoire où vous souhaitez cloner le projet, et exécutez la commande suivante :
 
-### 1. Backend (Spring Boot)
+```bash
+git clone https://github.com/MohamedBENIAICH/Java_Concurentiel.git
+cd Java_Concurentiel
+```
+
+Le projet contient deux dossiers principaux : `backend` et `frontend`.
+
+### 2. Configuration du Backend (Spring Boot)
+
+1.  **Ouvrir le projet Backend :** Lancez IntelliJ IDEA et ouvrez le dossier `backend` situé à la racine du projet cloné (`Java_Concurentiel/backend`). IntelliJ devrait détecter automatiquement qu'il s'agit d'un projet Maven et télécharger les dépendances nécessaires.
+2.  **Configurer la Base de Données :**
+    *   Ouvrez le fichier de configuration `application.properties` situé dans `backend/src/main/resources/`.
+    *   **Première exécution :** Modifiez la propriété `spring.jpa.hibernate.ddl-auto` et définissez sa valeur sur `create`. Cela permettra à Hibernate de créer automatiquement le schéma de la base de données et les tables lors du premier lancement.
+        ```properties
+        spring.jpa.hibernate.ddl-auto=create
+        ```
+    *   **Configurer les accès à MySQL :** Mettez à jour les propriétés suivantes avec vos informations de connexion à la base de données MySQL locale. Assurez-vous d'avoir préalablement créé une base de données (schéma) vide dans MySQL (par exemple, nommée `event_ticketing_db`).
+        ```properties
+        spring.datasource.url=jdbc:mysql://localhost:3306/event_ticketing_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+        spring.datasource.username=VOTRE_UTILISATEUR_MYSQL
+        spring.datasource.password=VOTRE_MOT_DE_PASSE_MYSQL
+        ```
+        Remplacez `event_ticketing_db`, `VOTRE_UTILISATEUR_MYSQL`, et `VOTRE_MOT_DE_PASSE_MYSQL` par vos propres valeurs.
+
+### 3. Configuration du Frontend (React + Vite)
+
+1.  **Ouvrir le projet Frontend :** Lancez Visual Studio Code et ouvrez le dossier `frontend` situé à la racine du projet cloné (`Java_Concurentiel/frontend`).
+2.  **Installer les Dépendances :** Ouvrez un terminal intégré dans VS Code (Terminal > Nouveau Terminal) et exécutez la commande suivante pour installer toutes les dépendances du projet frontend :
+    ```bash
+    npm install
+    ```
+
+### 4. Configuration de la Base de Données (MySQL)
+
+1.  **Lancer MySQL Workbench :** Démarrez MySQL Workbench et connectez-vous à votre instance de serveur MySQL locale.
+2.  **Créer un Schéma :** Créez un nouveau schéma (base de données) si vous ne l'avez pas déjà fait. Cliquez sur l'icône 
+
+`Create a new schema in the connected server` ou exécutez la requête SQL `CREATE SCHEMA event_ticketing_db;` (en remplaçant `event_ticketing_db` par le nom que vous avez choisi et configuré dans `application.properties`).
+
+## Démarrage du Système
+
+### 1. Démarrer le Backend (Spring Boot)
+
+1.  **Premier Lancement (Création des tables) :**
+    *   Assurez-vous que la propriété `spring.jpa.hibernate.ddl-auto` est bien sur `create` dans `application.properties`.
+    *   Dans IntelliJ IDEA, trouvez la classe principale de l'application : `backend/src/main/java/com/thilina_jayasinghe/w2052199/RealTimeEventTicketingSystem/RealTimeEventTicketingSystemApplication.java`.
+    *   Exécutez cette classe (clic droit > Run). Le serveur backend démarrera.
+    *   Vérifiez dans MySQL Workbench que les tables nécessaires (configuration, vendors, customers, tickets, etc.) ont été créées dans votre schéma.
+    *   Une fois les tables créées, **arrêtez l'application** backend dans IntelliJ.
+2.  **Modifier la Configuration Hibernate :**
+    *   Retournez dans le fichier `application.properties`.
+    *   Changez la valeur de `spring.jpa.hibernate.ddl-auto` de `create` à `update`. Cela empêchera Hibernate de recréer les tables à chaque démarrage et préservera les données.
+        ```properties
+        spring.jpa.hibernate.ddl-auto=update
+        ```
+3.  **Redémarrer le Backend :**
+    *   Relancez la classe `RealTimeEventTicketingSystemApplication.java` comme précédemment.
+    *   Le backend devrait maintenant être opérationnel et accessible sur `http://localhost:9090` (ou le port configuré si différent).
+
+### 2. Démarrer le Frontend (React + Vite)
+
+1.  **Lancer le Serveur de Développement :**
+    *   Dans le terminal de Visual Studio Code (ouvert dans le dossier `frontend`), exécutez la commande suivante :
+        ```bash
+        npm run dev
+        ```
+    *   Cette commande démarre le serveur de développement Vite.
+2.  **Accéder à l'Application Web :**
+    *   Ouvrez votre navigateur web et allez à l'adresse indiquée par Vite dans le terminal (généralement `http://localhost:5173`, mais vérifiez la sortie du terminal).
+
+### 3. Utiliser l'Interface en Ligne de Commande (CLI) - Optionnel
+
+Le projet inclut également une interface en ligne de commande.
+
+1.  **Exécuter la CLI :**
+    *   Dans IntelliJ IDEA, naviguez jusqu'à la classe `backend/src/main/java/com/thilina_jayasinghe/w2052199/RealTimeEventTicketingSystem/cli/EventTicketingSystem.java`.
+    *   Exécutez cette classe (clic droit > Run).
+    *   Suivez les instructions affichées dans la console pour interagir avec le système via la CLI.
+2.  **Fichiers de sortie de la CLI :**
+    *   Après avoir utilisé et quitté la CLI, vous pouvez consulter les fichiers `tickets.json` (historique des transactions) et `system_config_settings.json` (derniers paramètres de configuration utilisés) qui sont générés à la racine du module `backend`.
+
+## Utilisation de l'Application Web
+
+Une fois le backend et le frontend démarrés, vous pouvez utiliser l'application web :
+
+1.  **Configuration Initiale :** Configurez les paramètres du système via l'interface.
+2.  **Enregistrement :** Enregistrez les vendeurs (vendors) et les clients (customers).
+3.  **Logs :** Accédez à la section des logs pour suivre les événements.
+4.  **Démarrer la Simulation :** Lancez le processus de vente/achat de billets.
+5.  **Suivi en Temps Réel :** Consultez les logs en temps réel ou la section "TicketPool" pour voir l'état des billets disponibles.
+6.  **Catalogue des Billets :** Visualisez les billets achetés dans la section "Tickets".
+
+## Structure du Projet
+
+```
+Java_Concurentiel/
+├── backend/
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/com/thilina_jayasinghe/w2052199/RealTimeEventTicketingSystem/  # Code source Java (contrôleurs, services, modèles, CLI, etc.)
+│   │   │   └── resources/
+│   │   │       └── application.properties  # Fichier de configuration Spring Boot
+│   │   └── test/                     # Tests unitaires et d'intégration
+│   ├── pom.xml                       # Fichier de configuration Maven
+│   └── ...
+├── frontend/
+│   ├── public/                       # Fichiers statiques
+│   ├── src/                          # Code source React (composants, services, etc.)
+│   ├── index.html                    # Point d'entrée HTML
+│   ├── package.json                  # Dépendances et scripts npm
+│   ├── vite.config.ts                # Configuration de Vite
+│   ├── tsconfig.json                 # Configuration TypeScript
+│   └── ...
+└── README.md                         # Ce fichier
+```
+
+## Points d'API Principaux (Backend)
+
+Le backend expose une API REST sur `http://localhost:9090`.
+
+| Endpoint                         | Méthode | Description                                      |
+| :------------------------------- | :------ | :----------------------------------------------- |
+| `/api/save/config`               | POST    | Sauvegarder les détails de configuration         |
+| `/api/save/vendor`               | POST    | Enregistrer un nouveau vendeur                   |
+| `/api/get/vendor`                | GET     | Obtenir la liste des vendeurs enregistrés        |
+| `/api/delete/vendor/{vendorId}`  | DELETE  | Supprimer un vendeur spécifique                  |
+| `/api/save/customer`             | POST    | Enregistrer un nouveau client                    |
+| `/api/get/customer`              | GET     | Obtenir la liste des clients enregistrés         |
+| `/api/delete/customer/{customerId}` | DELETE  | Supprimer un client spécifique                   |
+| `/api/save/ticket`               | POST    | Enregistrer un billet (généralement interne)     |
+| `/api/get/tickets`               | GET     | Obtenir la liste des billets enregistrés (achetés) |
+| `/api/start`                     | POST    | Démarrer les threads (simulation producteur/consommateur) |
+| `/api/stop`                      | POST    | Arrêter les threads en cours                     |
+| `/api/reset`                     | POST    | Effacer les logs ou réinitialiser l'état       |
+
+## Connexion WebSocket
+
+*   **URL WebSocket :** `ws://localhost:9090/ws-native`
+*   **Objectif :** Fournir des mises à jour en temps réel sur l'état du `TicketPool` et les messages de log à l'interface utilisateur frontend.
+
+### Messages Supportés
+
+| Type de Message | Direction | Description                               |
+| :-------------- | :-------- | :---------------------------------------- |
+| `status`        | Réception | Mises à jour sur l'état du `TicketPool`   |
+| `logs`          | Réception | Mises à jour des messages de log          |
+| *Tout message*  | Envoi     | Messages envoyés depuis le client vers le backend (si applicable) |
+
+## Dépannage
+
+*   **Le Backend ne démarre pas ?**
+    *   Vérifiez attentivement les identifiants de la base de données (`url`, `username`, `password`) dans `application.properties`.
+    *   Assurez-vous que votre serveur MySQL est démarré et accessible sur le port spécifié (généralement 3306).
+    *   Vérifiez que la base de données/schéma spécifié dans l'URL JDBC existe bien.
+    *   Consultez les logs de démarrage de Spring Boot dans la console IntelliJ pour des messages d'erreur détaillés.
+*   **Problèmes avec le Frontend ?**
+    *   Assurez-vous d'avoir exécuté `npm install` dans le dossier `frontend` pour installer toutes les dépendances.
+    *   Vérifiez qu'aucune erreur ne s'affiche dans la console du terminal où `npm run dev` est exécuté.
+    *   Ouvrez les outils de développement de votre navigateur (généralement F12) et vérifiez la console pour des erreurs JavaScript ou des problèmes de connexion réseau (par exemple, échec de la connexion à l'API backend).
+    *   Assurez-vous que le backend est bien démarré et accessible depuis le frontend (généralement sur `http://localhost:9090`).
+
+## Contributeurs
+
+Ce projet est basé sur le travail initial de [thilinajayasinghe](https://github.com/thilinajayasinghe) et a été adapté et modifié par les contributeurs suivants :
+
+*   [MohamedBENIAICH](https://github.com/MohamedBENIAICH)
+*   [DiarraIbra](https://github.com/DiarraIbra)
+*   [issamidbenahmed](https://github.com/issamidbenahmed)
+
+N'hésitez pas à contribuer en ouvrant des issues ou des pull requests !
 
-Clone the Repository or download zip file and extract it
-
-Steps to clone repository:
-1. Create a folder and open the folder in Command Prompt
-
-2. Type the command:  git clone [<repository_url>](https://github.com/coding-genius01/RealTimeEventTicketingSystem.git)
-
-Open the folder you created or extracted and select RealTimeEventTicketingSystem folder
-
-Open it as an IntelliJ IDEA project by right clicking on it or by starting up IntelliJ IDEA and selecting Open Folder
-
-Go to the file on the path RealTimeEventTicketingSystem/src/main/resources/application.properties
-
-Set the value for "spring.jpa.hibernate.ddl-auto" property from "update" to "create" since you're running it for the first time
-
-### 2. Frontend (React)
-
-Install Dependencies
-
-Open the folder you created or extracted and select RealTimeEventTicketingSystemUI folder
-
-Open it as a VS Code project by right clicking on it or by starting up Visual Studio Code and selecting Open Folder
-
-Open a new terminal window in VS Code and run the command "npm install"
-
-### 3. Database (MySQL Workbench)
-
-Setup Local Database
-
-Launch MySQL Workbench and create a local instance.
-
-Make sure the MySQL instance is running and accessible via the credentials (url,username and password)
-
-Create a new database by clicking the Create New Schema option.
-
-Go to IntelliJ IDEA and update the values for "spring.datasource.url" with "jdbc:mysql://{your_local_instance_url}/{name_of_schema}", "spring.datasource.username" and "spring.datasource.password" properties according to the credentials for your local instance in MySQL Workbench.
-
-## Start up the system
-
-### 1. CLI
-
-Go to the java class file in the path RealTimeEventTicketingSystem/src/main/java/com/thilina_jayasinghe/w2052199/RealTimeEventTicketingSystem/cli/EventTicketingSystem.java in IntelliJ IDEA
-
-Run the class
-
-After the exiting the program, view "tickets.json" to view transaction history and "system_config_settings.json" file to view last used configuration settings
-
-### 2. Web App
-
-Start the backend (Spring Boot) by going to the class RealTimeEventTicketingSystem/src/main/java/com/thilina_jayasinghe/w2052199/RealTimeEventTicketingSystem/RealTimeEventTicketingSystemApplication.java
-
-Run the application for the first time and check if the tables are created for configuration, vendors, customers and tickets in MySQL Workbench
-
-After the tables are created, stop the application class.
-
-Set the value for "spring.jpa.hibernate.ddl-auto" property from "create" to "update" in application.properties
-
-Rerun the system
-
-Start frontend (Angular) by entering the command "ng serve" in the terminal.
-
-Open http://localhost:4200 to access the application.
-
-## Usage
-
-Perform operations such as:
-
-1. Initialize configuring the system settings.
-2. Register the vendors.
-3. Register the customers.
-4. Go to the Logs section.
-5. Start the system.
-6. View real-time logs or visit the TicketPool section for more info.
-7. Go to Tickets to view purchased tickets catalogue.
-
-The backend API runs at http://localhost:9090.
-
-## Project Structure
-
-### Backend
-
-RealTimeEventTicketingSystem/src/main/java/com/thilina_jayasinghe/w2052199/RealTimeEventTicketingSystem: Source code.
-
-RealTimeEventTicketingSystem/src/main/resources: File to configure application -> application.properties
-
-### Frontend
-
-realTimeEventTicketingUI/src/app: Angular components, services, and modules.
-
-## API Endpoints
-
-|  Endpoint                       |  Method   |          Description                      |
-|---------------------------------|-----------|-------------------------------------------|
-|api/save/config                  |   POST    |  Save configuration details               |
-|api/save/vendor                  |   POST    | Save new vendor                           |
-|api/get/vendor                   |   GET     |  Get list of saved vendors in database    |
-|api/delete/vendor/{vendorId}     |   DELETE  |  Delete a specific vendor from database   |
-|api/save/customer                |   POST    |  Save new customer                        |
-|api/get/customer                 |   GET     |  Get list of saved customers in database  |
-|api/delete/customer/{customerId} |   DELETE  |  Delete a specific customer from database |
-|api/save/ticket                  |   POST    |  Save a ticket in database                |
-|api/get/tickets                  |   GET     |  Get list of saved tickets in database    |
-|api/start                        |   POST    |  Start threads                            |
-|api/stop                         |   POST    |  Stop running threads                     |
-|api/reset                        |   POST    |  Clear logs                               |
-
-
-## WebSocket Connection
-
-WebSocket URL: ws://localhost:9090/ws-native
-
-Purpose: Real time updates on TicketPool status and logs
-
-### Supported Messages
-
-| MessageType   | Direction | Description                     |
-|---------------|-----------|---------------------------------|
-| status        | Receive   | Updates on ticketpool status    |
-| logs          | Receive   | Updates log messages            |
-|               | Send      | Messages sent to backend server |
-
-
-## Troubleshooting
-
-Backend not starting?
-
-Verify the database credentials in application.properties.
-
-Ensure MySQL is running locally on the specified port.
-
-Frontend issues?
-
-Check if node_modules is installed by running npm install.
-
-Ensure the Angular CLI is installed globally.
